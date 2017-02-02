@@ -39,6 +39,18 @@ namespace :gtfs do
     )
     version = feed.version
 
+    puts "Loading agencies"
+    source.each_agency do |agency|
+      Agency.create!(
+        external_id: agency.id,
+        name: agency.name,
+        url: agency.url,
+        timezone: agency.timezone,
+        language: agency.lang,
+        phone: agency.phone
+      )
+    end
+
     puts "=== Loading GTFS complete ==="
   end
 end
