@@ -57,6 +57,10 @@ GEM
     ffi (1.9.17)
     globalid (0.3.7)
       activesupport (>= 4.1.0)
+    gtfs (0.2.5)
+      multi_json
+      rake
+      rubyzip (~> 1.1)
     i18n (0.7.0)
     jbuilder (2.6.1)
       activesupport (>= 3.0.0, < 5.1)
@@ -114,6 +118,7 @@ GEM
     rb-fsevent (0.9.8)
     rb-inotify (0.9.8)
       ffi (>= 0.5.0)
+    rubyzip (1.2.0)
     sass (3.4.23)
     sass-rails (5.0.6)
       railties (>= 4.0.0, < 6)
@@ -159,6 +164,7 @@ DEPENDENCIES
   ar-uuid
   byebug
   coffee-rails (~> 4.2)
+  gtfs
   jbuilder (~> 2.5)
   jquery-rails
   listen (~> 3.0.5)

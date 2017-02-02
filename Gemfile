@@ -54,3 +54,5 @@ end
 
 # Override migration methods to support UUID columns. https://github.com/fnando/ar-uuid
 gem 'ar-uuid'
+# Ruby lib for dealing with GTFS. https://github.com/nerdEd/gtfs
+gem 'gtfs'
