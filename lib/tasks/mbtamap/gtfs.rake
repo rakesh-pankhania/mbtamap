@@ -51,6 +51,23 @@ namespace :gtfs do
       )
     end
 
+    puts "Loading routes"
+    agency = nil
+    source.each_route do |route|
+      agency = Agency.find_by!(external_id: route.agency_id) if agency.nil? || agency.external_id != route.agency_id.to_s
+      agency.routes.create!(
+        external_id: route.id,
+        short_name: route.short_name,
+        long_name: route.long_name,
+        description: route.desc,
+        route_type: route.type,
+        url: route.url,
+        color: route.color,
+        text_color: route.text_color
+      )
+    end
+
+
     puts "=== Loading GTFS complete ==="
   end
 end
