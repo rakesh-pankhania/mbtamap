@@ -67,6 +67,19 @@ namespace :gtfs do
       )
     end
 
+    puts "Loading trips"
+    route = nil
+    source.each_trip do |trip|
+      route = Route.find_by!(external_id: trip.route_id) if route.nil? || route.external_id != trip.route_id.to_s
+      route.trips.create!(
+        external_id: trip.id,
+        headsign: trip.headsign,
+        short_name: trip.short_name,
+        direction: trip.direction_id,
+        block_id: trip.block_id,
+        wheelchair_accessible: trip.wheelchair_accessible
+      )
+    end
 
     puts "=== Loading GTFS complete ==="
   end
