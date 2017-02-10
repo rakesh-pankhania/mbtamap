@@ -32,6 +32,7 @@ namespace :gtfs do
     Rake::Task["gtfs:load_routes"].invoke
     Rake::Task["gtfs:load_services"].invoke
     Rake::Task["gtfs:load_trips"].invoke
+    Rake::Task["gtfs:load_stop_times"].invoke
 
     puts "=== Finished ==="
   end
@@ -138,6 +139,28 @@ namespace :gtfs do
           direction: trip.direction_id,
           block_id: trip.block_id,
           wheelchair_accessible: trip.wheelchair_accessible
+        )
+      end
+    end
+  end
+
+  task load_stop_times: :environment do
+    @source ||= load_source
+    puts "Loading stop times"
+
+    StopTime.transaction do
+      trip = nil
+      @source.each_stop_time do |stop_time|
+        trip = Trip.find_by!(external_id: stop_time.trip_id) if trip.nil? || trip.external_id != stop_time.trip_id.to_ssdf
+        arrival_time = stop_time.arrival_time.to_s.split(":")
+        departure_time = stop_time.departure_time.to_s.split(":")
+        trip.stop_times.create!(
+          arrival_minutes_past_midnight: (arrival_time[0].to_i * 60 + arrival_time[1].to_i),
+          departure_minutes_past_midnight: (departure_time[0].to_i * 60 + departure_time[1].to_i),
+          stop_sequence: stop_time.stop_sequence,
+          stop_headsign: stop_time.stop_headsign,
+          pickup_type: stop_time.pickup_type,
+          drop_off_type: stop_time.drop_off_type
         )
       end
     end

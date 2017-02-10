@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170205021839) do
+ActiveRecord::Schema.define(version: 20170210210401) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -72,6 +72,19 @@ ActiveRecord::Schema.define(version: 20170205021839) do
     t.datetime "end_date"
     t.datetime "created_at",  null: false
     t.datetime "updated_at",  null: false
+  end
+
+  create_table "stop_times", id: :uuid, default: -> { "uuid_generate_v4()" }, force: :cascade do |t|
+    t.uuid     "trip_id"
+    t.integer  "arrival_minutes_past_midnight"
+    t.integer  "departure_minutes_past_midnight"
+    t.integer  "stop_sequence"
+    t.string   "stop_headsign"
+    t.integer  "pickup_type"
+    t.integer  "drop_off_type"
+    t.datetime "created_at",                      null: false
+    t.datetime "updated_at",                      null: false
+    t.index ["trip_id"], name: "index_stop_times_on_trip_id", using: :btree
   end
 
   create_table "trips", id: :uuid, default: -> { "uuid_generate_v4()" }, force: :cascade do |t|
