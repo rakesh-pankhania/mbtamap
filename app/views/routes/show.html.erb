@@ -5,7 +5,7 @@
 
 <p>
 <% @route.trips.each do |trip| -%>
-	<%= trip.external_id %>: <%= trip.short_name %><br />
+	<p><%= trip.external_id %>: <%= trip.inspect %></p>
 <% end -%>
 </p>
 

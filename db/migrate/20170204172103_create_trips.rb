@@ -2,7 +2,7 @@ class CreateTrips < ActiveRecord::Migration[5.0]
   def change
     create_table :trips do |t|
       t.references :route
-      # t.references :service
+      t.references :service, polymorphic: true, index: true
       # t.references :shape
       t.string     :external_id
       t.string     :headsign

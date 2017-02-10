@@ -30,9 +30,10 @@ namespace :gtfs do
     Rake::Task["gtfs:load_feed"].invoke
     Rake::Task["gtfs:load_agencies"].invoke
     Rake::Task["gtfs:load_routes"].invoke
+    Rake::Task["gtfs:load_services"].invoke
     Rake::Task["gtfs:load_trips"].invoke
 
-    puts "=== Loading GTFS complete ==="
+    puts "=== Finished ==="
   end
 
   task load_feed: :environment do
@@ -52,15 +53,17 @@ namespace :gtfs do
     @source ||= load_source
     puts "Loading agencies"
 
-    @source.each_agency do |agency|
-      Agency.create!(
-        external_id: agency.id,
-        name: agency.name,
-        url: agency.url,
-        timezone: agency.timezone,
-        language: agency.lang,
-        phone: agency.phone
-      )
+    Agency.transaction do
+      @source.each_agency do |agency|
+        Agency.create!(
+          external_id: agency.id,
+          name: agency.name,
+          url: agency.url,
+          timezone: agency.timezone,
+          language: agency.lang,
+          phone: agency.phone
+        )
+      end
     end
   end
 
@@ -68,19 +71,52 @@ namespace :gtfs do
     @source ||= load_source
     puts "Loading routes"
 
-    agency = nil
-    @source.each_route do |route|
-      agency = Agency.find_by!(external_id: route.agency_id) if agency.nil? || agency.external_id != route.agency_id.to_s
-      agency.routes.create!(
-        external_id: route.id,
-        short_name: route.short_name,
-        long_name: route.long_name,
-        description: route.desc,
-        route_type: route.type,
-        url: route.url,
-        color: route.color,
-        text_color: route.text_color
-      )
+    Route.transaction do
+      agency = nil
+      @source.each_route do |route|
+        agency = Agency.find_by!(external_id: route.agency_id) if agency.nil? || agency.external_id != route.agency_id.to_s
+        agency.routes.create!(
+          external_id: route.id,
+          short_name: route.short_name,
+          long_name: route.long_name,
+          description: route.desc,
+          route_type: route.type,
+          url: route.url,
+          color: route.color,
+          text_color: route.text_color
+        )
+      end
+    end
+  end
+
+  task load_services: :environment do
+    @source ||= load_source
+    puts "Loading services"
+
+    Service.transaction do
+      @source.each_calendar do |calendar|
+        Service.create!(
+          external_id: calendar.service_id,
+          monday: calendar.monday,
+          tuesday: calendar.tuesday,
+          wednesday: calendar.wednesday,
+          thursday: calendar.thursday,
+          friday: calendar.friday,
+          saturday: calendar.saturday,
+          sunday: calendar.sunday,
+          start_date: Date.parse(calendar.start_date),
+          end_date: Date.parse(calendar.end_date)
+        )
+      end
+
+      service = nil
+      @source.each_calendar_date do |calendar_date|
+        service = Service.find_by!(external_id: calendar_date.service_id) if service.nil? || service.external_id != calendar_date.service_id.to_s
+        service.service_addendums.create!(
+          date: Date.parse(calendar_date.date),
+          exception_type: calendar_date.exception_type
+        )
+      end
     end
   end
 
@@ -88,17 +124,22 @@ namespace :gtfs do
     @source ||= load_source
     puts "Loading trips"
 
-    route = nil
-    @source.each_trip do |trip|
-      route = Route.find_by!(external_id: trip.route_id) if route.nil? || route.external_id != trip.route_id.to_s
-      route.trips.create!(
-        external_id: trip.id,
-        headsign: trip.headsign,
-        short_name: trip.short_name,
-        direction: trip.direction_id,
-        block_id: trip.block_id,
-        wheelchair_accessible: trip.wheelchair_accessible
-      )
+    services = Hash[ Service.all.map { |s| [s.external_id, s] } ]
+
+    Trip.transaction do
+      route = nil
+      @source.each_trip do |trip|
+        route = Route.find_by!(external_id: trip.route_id) if route.nil? || route.external_id != trip.route_id.to_s
+        route.trips.create!(
+          external_id: trip.id,
+          service: services[trip.service_id],
+          headsign: trip.headsign,
+          short_name: trip.short_name,
+          direction: trip.direction_id,
+          block_id: trip.block_id,
+          wheelchair_accessible: trip.wheelchair_accessible
+        )
+      end
     end
   end
 

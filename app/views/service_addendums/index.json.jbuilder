@@ -1,0 +1,1 @@
+json.array! @service_addendums, partial: 'service_addendums/service_addendum', as: :service_addendum
