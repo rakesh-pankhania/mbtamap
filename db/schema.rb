@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170212000558) do
+ActiveRecord::Schema.define(version: 20170212020022) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -33,6 +33,17 @@ ActiveRecord::Schema.define(version: 20170212000558) do
     t.datetime "end_date"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "points", id: :uuid, default: -> { "uuid_generate_v4()" }, force: :cascade do |t|
+    t.uuid     "shape_id"
+    t.float    "lattitude"
+    t.float    "longitude"
+    t.integer  "sequence"
+    t.float    "dist_traveled"
+    t.datetime "created_at",    null: false
+    t.datetime "updated_at",    null: false
+    t.index ["shape_id"], name: "index_points_on_shape_id", using: :btree
   end
 
   create_table "routes", id: :uuid, default: -> { "uuid_generate_v4()" }, force: :cascade do |t|
@@ -70,6 +81,12 @@ ActiveRecord::Schema.define(version: 20170212000558) do
     t.boolean  "sunday"
     t.datetime "start_date"
     t.datetime "end_date"
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
+  end
+
+  create_table "shapes", id: :uuid, default: -> { "uuid_generate_v4()" }, force: :cascade do |t|
+    t.string   "external_id"
     t.datetime "created_at",  null: false
     t.datetime "updated_at",  null: false
   end

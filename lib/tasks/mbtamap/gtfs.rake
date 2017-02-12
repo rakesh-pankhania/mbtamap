@@ -34,6 +34,7 @@ namespace :gtfs do
     Rake::Task["gtfs:load_trips"].invoke
     Rake::Task["gtfs:load_stops"].invoke
     Rake::Task["gtfs:load_stop_times"].invoke
+    Rake::Task["gtfs:load_shapes"].invoke
 
     puts "=== Finished ==="
   end
@@ -188,6 +189,26 @@ namespace :gtfs do
           stop_headsign: stop_time.stop_headsign,
           pickup_type: stop_time.pickup_type,
           drop_off_type: stop_time.drop_off_type
+        )
+      end
+    end
+  end
+
+  task load_shapes: :environment do
+    @source ||= load_source
+    puts "Loading shapes"
+
+    Shape.transaction do
+      curr_shape = nil
+      @source.each_shape do |shape|
+        if curr_shape.nil? || curr_shape.external_id != shape.id
+          curr_shape = Shape.create!(external_id: shape.id)
+        end
+        curr_shape.points.create!(
+          lattitude: shape.pt_lat,
+          longitude: shape.pt_lon,
+          sequence: shape.pt_sequence,
+          dist_traveled: shape.dist_traveled
         )
       end
     end
