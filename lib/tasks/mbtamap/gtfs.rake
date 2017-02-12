@@ -32,6 +32,7 @@ namespace :gtfs do
     Rake::Task["gtfs:load_routes"].invoke
     Rake::Task["gtfs:load_services"].invoke
     Rake::Task["gtfs:load_trips"].invoke
+    Rake::Task["gtfs:load_stops"].invoke
     Rake::Task["gtfs:load_stop_times"].invoke
 
     puts "=== Finished ==="
@@ -140,6 +141,32 @@ namespace :gtfs do
           block_id: trip.block_id,
           wheelchair_accessible: trip.wheelchair_accessible
         )
+      end
+    end
+  end
+
+  task load_stops: :environment do
+    @source ||= load_source
+    puts "Loading stops"
+
+    Stop.transaction do
+      @source.each_stop do |stop|        
+        Stop.create!(
+          external_id: stop.id,
+          code: stop.code,
+          name: stop.name,
+          description: stop.desc,
+          lattitude: stop.lat,
+          longitute: stop.lon,
+          url: stop.url,
+          location_type: stop.location_type,
+          wheelchair_boarding: stop.wheelchair_boarding
+        )
+      end
+      @source.each_stop do |stop|
+        next if stop.parent_station.to_s == ""
+        parent_station = Stop.find_by!(external_id: stop.parent_station)
+        Stop.find_by!(external_id: stop.id).update!(parent_station: parent_station)
       end
     end
   end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170210210401) do
+ActiveRecord::Schema.define(version: 20170212000558) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -76,6 +76,7 @@ ActiveRecord::Schema.define(version: 20170210210401) do
 
   create_table "stop_times", id: :uuid, default: -> { "uuid_generate_v4()" }, force: :cascade do |t|
     t.uuid     "trip_id"
+    t.uuid     "stop_id"
     t.integer  "arrival_minutes_past_midnight"
     t.integer  "departure_minutes_past_midnight"
     t.integer  "stop_sequence"
@@ -84,7 +85,24 @@ ActiveRecord::Schema.define(version: 20170210210401) do
     t.integer  "drop_off_type"
     t.datetime "created_at",                      null: false
     t.datetime "updated_at",                      null: false
+    t.index ["stop_id"], name: "index_stop_times_on_stop_id", using: :btree
     t.index ["trip_id"], name: "index_stop_times_on_trip_id", using: :btree
+  end
+
+  create_table "stops", id: :uuid, default: -> { "uuid_generate_v4()" }, force: :cascade do |t|
+    t.uuid     "parent_station_id"
+    t.string   "external_id"
+    t.string   "code"
+    t.string   "name"
+    t.string   "description"
+    t.float    "lattitude"
+    t.float    "longitute"
+    t.string   "url"
+    t.integer  "location_type",       default: 0
+    t.integer  "wheelchair_boarding", default: 0
+    t.datetime "created_at",                      null: false
+    t.datetime "updated_at",                      null: false
+    t.index ["parent_station_id"], name: "index_stops_on_parent_station_id", using: :btree
   end
 
   create_table "trips", id: :uuid, default: -> { "uuid_generate_v4()" }, force: :cascade do |t|
@@ -104,4 +122,5 @@ ActiveRecord::Schema.define(version: 20170210210401) do
     t.index ["service_type", "service_id"], name: "index_trips_on_service_type_and_service_id", using: :btree
   end
 
+  add_foreign_key "stops", "stops", column: "parent_station_id"
 end

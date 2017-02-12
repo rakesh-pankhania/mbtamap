@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  resources :stops
   resources :service_addendums
   resources :services
   resources :trips
