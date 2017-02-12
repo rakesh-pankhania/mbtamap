@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170212020022) do
+ActiveRecord::Schema.define(version: 20170212024359) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -122,6 +122,17 @@ ActiveRecord::Schema.define(version: 20170212020022) do
     t.index ["parent_station_id"], name: "index_stops_on_parent_station_id", using: :btree
   end
 
+  create_table "transfers", id: :uuid, default: -> { "uuid_generate_v4()" }, force: :cascade do |t|
+    t.uuid     "from_stop_id"
+    t.uuid     "to_stop_id"
+    t.integer  "transfer_type"
+    t.integer  "min_transfer_time"
+    t.datetime "created_at",        null: false
+    t.datetime "updated_at",        null: false
+    t.index ["from_stop_id"], name: "index_transfers_on_from_stop_id", using: :btree
+    t.index ["to_stop_id"], name: "index_transfers_on_to_stop_id", using: :btree
+  end
+
   create_table "trips", id: :uuid, default: -> { "uuid_generate_v4()" }, force: :cascade do |t|
     t.uuid     "route_id"
     t.string   "service_type"
@@ -140,4 +151,6 @@ ActiveRecord::Schema.define(version: 20170212020022) do
   end
 
   add_foreign_key "stops", "stops", column: "parent_station_id"
+  add_foreign_key "transfers", "stops", column: "from_stop_id"
+  add_foreign_key "transfers", "stops", column: "to_stop_id"
 end

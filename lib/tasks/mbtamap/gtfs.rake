@@ -34,6 +34,7 @@ namespace :gtfs do
     Rake::Task["gtfs:load_trips"].invoke
     Rake::Task["gtfs:load_stops"].invoke
     Rake::Task["gtfs:load_stop_times"].invoke
+    Rake::Task["gtfs:load_transfers"].invoke
     Rake::Task["gtfs:load_shapes"].invoke
 
     puts "=== Finished ==="
@@ -42,7 +43,7 @@ namespace :gtfs do
   task load_feed: :environment do
     @source ||= load_source
     puts "Loading feed metadata"
-    
+
     raise if @source.feed_infos.count > 1
     feed_info = @source.feed_infos.first
     feed = Feed.create!(
@@ -151,7 +152,7 @@ namespace :gtfs do
     puts "Loading stops"
 
     Stop.transaction do
-      @source.each_stop do |stop|        
+      @source.each_stop do |stop|
         Stop.create!(
           external_id: stop.id,
           code: stop.code,
@@ -189,6 +190,24 @@ namespace :gtfs do
           stop_headsign: stop_time.stop_headsign,
           pickup_type: stop_time.pickup_type,
           drop_off_type: stop_time.drop_off_type
+        )
+      end
+    end
+  end
+
+  task load_transfers: :environment do
+    @source ||= load_source
+    puts "Loading transfers"
+
+    Transfer.transaction do
+      @source.each_transfer do |transfer|
+        from_stop = Stop.find_by!(external_id: transfer.from_stop_id)
+        to_stop = Stop.find_by!(external_id: transfer.to_stop_id)
+        Transfer.create!(
+          from_stop: from_stop,
+          to_stop: to_stop,
+          transfer_type: transfer.type,
+          min_transfer_time: transfer.min_transfer_time
         )
       end
     end
