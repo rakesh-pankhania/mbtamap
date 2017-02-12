@@ -1,6 +1,8 @@
 class Service < ApplicationRecord
   has_many :service_addendums
 
+  validates_uniqueness_of :external_id
+
   def valid_today?
   	service_addendums.each do |service_addendum|
       next unless service_addendum.date == Date.today

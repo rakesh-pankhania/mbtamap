@@ -5,7 +5,8 @@
 
 <p>
 <% @route.trips.each do |trip| -%>
-	<p><%= trip.external_id %>: <%= trip.inspect %></p>
+<% next unless trip.service.valid_today? -%>
+	<p><%= link_to 'Go', trip %><br /><%= trip.external_id %>: <%= trip.inspect %></p>
 <% end -%>
 </p>
 

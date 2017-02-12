@@ -31,11 +31,11 @@ namespace :gtfs do
     Rake::Task["gtfs:load_agencies"].invoke
     Rake::Task["gtfs:load_routes"].invoke
     Rake::Task["gtfs:load_services"].invoke
+    Rake::Task["gtfs:load_shapes"].invoke
     Rake::Task["gtfs:load_trips"].invoke
     Rake::Task["gtfs:load_stops"].invoke
     Rake::Task["gtfs:load_stop_times"].invoke
     Rake::Task["gtfs:load_transfers"].invoke
-    Rake::Task["gtfs:load_shapes"].invoke
 
     puts "=== Finished ==="
   end
@@ -45,11 +45,14 @@ namespace :gtfs do
     puts "Loading feed metadata"
 
     raise if @source.feed_infos.count > 1
-    feed_info = @source.feed_infos.first
-    feed = Feed.create!(
-      version: feed_info.version,
-      start_date: Date.parse(feed_info.start_date),
-      end_date: Date.parse(feed_info.end_date)
+    feed = @source.feed_infos.first
+    Feed.create!(
+      publisher_name: feed.publisher_name,
+      publisher_url: feed.publisher_url,
+      lang: feed.lang,
+      version: feed.version,
+      start_date: Date.parse(feed.start_date),
+      end_date: Date.parse(feed.end_date)
     )
   end
 
@@ -84,7 +87,7 @@ namespace :gtfs do
           short_name: route.short_name,
           long_name: route.long_name,
           description: route.desc,
-          route_type: route.type,
+          route_type: route.type.to_i,
           url: route.url,
           color: route.color,
           text_color: route.text_color
@@ -134,12 +137,14 @@ namespace :gtfs do
       route = nil
       @source.each_trip do |trip|
         route = Route.find_by!(external_id: trip.route_id) if route.nil? || route.external_id != trip.route_id.to_s
+        shape = trip.shape_id.blank? ? nil : Shape.find_by!(external_id: trip.shape_id)
         route.trips.create!(
           external_id: trip.id,
           service: services[trip.service_id],
+          shape: shape,
           headsign: trip.headsign,
           short_name: trip.short_name,
-          direction: trip.direction_id,
+          direction_id: trip.direction_id,
           block_id: trip.block_id,
           wheelchair_accessible: trip.wheelchair_accessible
         )
@@ -159,7 +164,7 @@ namespace :gtfs do
           name: stop.name,
           description: stop.desc,
           lattitude: stop.lat,
-          longitute: stop.lon,
+          longitude: stop.lon,
           url: stop.url,
           location_type: stop.location_type,
           wheelchair_boarding: stop.wheelchair_boarding
@@ -180,10 +185,12 @@ namespace :gtfs do
     StopTime.transaction do
       trip = nil
       @source.each_stop_time do |stop_time|
-        trip = Trip.find_by!(external_id: stop_time.trip_id) if trip.nil? || trip.external_id != stop_time.trip_id.to_ssdf
+        trip = Trip.find_by!(external_id: stop_time.trip_id) if trip.nil? || trip.external_id != stop_time.trip_id.to_s
+        stop = Stop.find_by!(external_id: stop_time.stop_id)
         arrival_time = stop_time.arrival_time.to_s.split(":")
         departure_time = stop_time.departure_time.to_s.split(":")
         trip.stop_times.create!(
+          stop: stop,
           arrival_minutes_past_midnight: (arrival_time[0].to_i * 60 + arrival_time[1].to_i),
           departure_minutes_past_midnight: (departure_time[0].to_i * 60 + departure_time[1].to_i),
           stop_sequence: stop_time.stop_sequence,
@@ -221,7 +228,7 @@ namespace :gtfs do
       curr_shape = nil
       @source.each_shape do |shape|
         if curr_shape.nil? || curr_shape.external_id != shape.id
-          curr_shape = Shape.create!(external_id: shape.id)
+          curr_shape = Shape.find_or_create_by(external_id: shape.id)
         end
         curr_shape.points.create!(
           lattitude: shape.pt_lat,

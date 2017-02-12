@@ -18,9 +18,9 @@ ActiveRecord::Schema.define(version: 20170212024359) do
 
   create_table "agencies", id: :uuid, default: -> { "uuid_generate_v4()" }, force: :cascade do |t|
     t.string   "external_id"
-    t.string   "name"
-    t.string   "url"
-    t.string   "timezone"
+    t.string   "name",        null: false
+    t.string   "url",         null: false
+    t.string   "timezone",    null: false
     t.string   "language"
     t.string   "phone"
     t.datetime "created_at",  null: false
@@ -28,18 +28,21 @@ ActiveRecord::Schema.define(version: 20170212024359) do
   end
 
   create_table "feeds", id: :uuid, default: -> { "uuid_generate_v4()" }, force: :cascade do |t|
-    t.string   "version"
+    t.string   "publisher_name"
+    t.string   "publisher_url"
+    t.string   "lang"
     t.datetime "start_date"
     t.datetime "end_date"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.string   "version"
+    t.datetime "created_at",     null: false
+    t.datetime "updated_at",     null: false
   end
 
   create_table "points", id: :uuid, default: -> { "uuid_generate_v4()" }, force: :cascade do |t|
-    t.uuid     "shape_id"
-    t.float    "lattitude"
-    t.float    "longitude"
-    t.integer  "sequence"
+    t.uuid     "shape_id",      null: false
+    t.float    "lattitude",     null: false
+    t.float    "longitude",     null: false
+    t.integer  "sequence",      null: false
     t.float    "dist_traveled"
     t.datetime "created_at",    null: false
     t.datetime "updated_at",    null: false
@@ -48,11 +51,11 @@ ActiveRecord::Schema.define(version: 20170212024359) do
 
   create_table "routes", id: :uuid, default: -> { "uuid_generate_v4()" }, force: :cascade do |t|
     t.uuid     "agency_id"
-    t.string   "external_id"
+    t.string   "external_id", null: false
     t.string   "short_name"
     t.string   "long_name"
     t.string   "description"
-    t.string   "route_type"
+    t.integer  "route_type",  null: false
     t.string   "url"
     t.string   "color"
     t.string   "text_color"
@@ -62,41 +65,41 @@ ActiveRecord::Schema.define(version: 20170212024359) do
   end
 
   create_table "service_addendums", id: :uuid, default: -> { "uuid_generate_v4()" }, force: :cascade do |t|
-    t.uuid     "service_id"
-    t.datetime "date"
-    t.integer  "exception_type"
+    t.uuid     "service_id",     null: false
+    t.datetime "date",           null: false
+    t.integer  "exception_type", null: false
     t.datetime "created_at",     null: false
     t.datetime "updated_at",     null: false
     t.index ["service_id"], name: "index_service_addendums_on_service_id", using: :btree
   end
 
   create_table "services", id: :uuid, default: -> { "uuid_generate_v4()" }, force: :cascade do |t|
-    t.string   "external_id"
-    t.boolean  "monday"
-    t.boolean  "tuesday"
-    t.boolean  "wednesday"
-    t.boolean  "thursday"
-    t.boolean  "friday"
-    t.boolean  "saturday"
-    t.boolean  "sunday"
-    t.datetime "start_date"
-    t.datetime "end_date"
+    t.string   "external_id", null: false
+    t.boolean  "monday",      null: false
+    t.boolean  "tuesday",     null: false
+    t.boolean  "wednesday",   null: false
+    t.boolean  "thursday",    null: false
+    t.boolean  "friday",      null: false
+    t.boolean  "saturday",    null: false
+    t.boolean  "sunday",      null: false
+    t.datetime "start_date",  null: false
+    t.datetime "end_date",    null: false
     t.datetime "created_at",  null: false
     t.datetime "updated_at",  null: false
   end
 
   create_table "shapes", id: :uuid, default: -> { "uuid_generate_v4()" }, force: :cascade do |t|
-    t.string   "external_id"
+    t.string   "external_id", null: false
     t.datetime "created_at",  null: false
     t.datetime "updated_at",  null: false
   end
 
   create_table "stop_times", id: :uuid, default: -> { "uuid_generate_v4()" }, force: :cascade do |t|
-    t.uuid     "trip_id"
-    t.uuid     "stop_id"
-    t.integer  "arrival_minutes_past_midnight"
-    t.integer  "departure_minutes_past_midnight"
-    t.integer  "stop_sequence"
+    t.uuid     "trip_id",                         null: false
+    t.uuid     "stop_id",                         null: false
+    t.integer  "arrival_minutes_past_midnight",   null: false
+    t.integer  "departure_minutes_past_midnight", null: false
+    t.integer  "stop_sequence",                   null: false
     t.string   "stop_headsign"
     t.integer  "pickup_type"
     t.integer  "drop_off_type"
@@ -108,12 +111,12 @@ ActiveRecord::Schema.define(version: 20170212024359) do
 
   create_table "stops", id: :uuid, default: -> { "uuid_generate_v4()" }, force: :cascade do |t|
     t.uuid     "parent_station_id"
-    t.string   "external_id"
+    t.string   "external_id",                     null: false
     t.string   "code"
-    t.string   "name"
+    t.string   "name",                            null: false
     t.string   "description"
-    t.float    "lattitude"
-    t.float    "longitute"
+    t.float    "lattitude",                       null: false
+    t.float    "longitude",                       null: false
     t.string   "url"
     t.integer  "location_type",       default: 0
     t.integer  "wheelchair_boarding", default: 0
@@ -123,9 +126,9 @@ ActiveRecord::Schema.define(version: 20170212024359) do
   end
 
   create_table "transfers", id: :uuid, default: -> { "uuid_generate_v4()" }, force: :cascade do |t|
-    t.uuid     "from_stop_id"
-    t.uuid     "to_stop_id"
-    t.integer  "transfer_type"
+    t.uuid     "from_stop_id",      null: false
+    t.uuid     "to_stop_id",        null: false
+    t.integer  "transfer_type",     null: false
     t.integer  "min_transfer_time"
     t.datetime "created_at",        null: false
     t.datetime "updated_at",        null: false
@@ -134,13 +137,14 @@ ActiveRecord::Schema.define(version: 20170212024359) do
   end
 
   create_table "trips", id: :uuid, default: -> { "uuid_generate_v4()" }, force: :cascade do |t|
-    t.uuid     "route_id"
-    t.string   "service_type"
-    t.uuid     "service_id"
-    t.string   "external_id"
+    t.uuid     "route_id",              null: false
+    t.string   "service_type",          null: false
+    t.uuid     "service_id",            null: false
+    t.uuid     "shape_id"
+    t.string   "external_id",           null: false
     t.string   "headsign"
     t.string   "short_name"
-    t.integer  "direction"
+    t.integer  "direction_id"
     t.string   "block_id"
     t.integer  "wheelchair_accessible"
     t.integer  "bikes_allowed"
@@ -148,6 +152,7 @@ ActiveRecord::Schema.define(version: 20170212024359) do
     t.datetime "updated_at",            null: false
     t.index ["route_id"], name: "index_trips_on_route_id", using: :btree
     t.index ["service_type", "service_id"], name: "index_trips_on_service_type_and_service_id", using: :btree
+    t.index ["shape_id"], name: "index_trips_on_shape_id", using: :btree
   end
 
   add_foreign_key "stops", "stops", column: "parent_station_id"
