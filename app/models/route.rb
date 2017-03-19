@@ -1,10 +1,14 @@
 class Route < ApplicationRecord
+  extend FriendlyId
+
   belongs_to :agency
   has_many :trips
 
   validates_uniqueness_of :external_id
   validate :name_given
   validate :route_type_within_range
+
+  friendly_id :name, use: [:slugged, :finders]
 
   ROUTE_TYPES = [
     "Light rail",

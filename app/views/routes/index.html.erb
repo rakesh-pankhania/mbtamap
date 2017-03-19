@@ -12,7 +12,7 @@
   <tbody>
     <% @grouped_routes.each do |type, routes| -%>
     <tr><td colspan="3"><b><%= Route::ROUTE_TYPES[type] %></b></td></tr>
-    <% routes.each do |route| -%>
+    <% routes.sort_by(&:name).each do |route| -%>
     <tr>
       <td><%= link_to(route.long_name == "" ? route.short_name : route.long_name, route) %></td>
     </tr>

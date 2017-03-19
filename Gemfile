@@ -54,5 +54,7 @@ end
 
 # Override migration methods to support UUID columns. https://github.com/fnando/ar-uuid
 gem 'ar-uuid'
+# Create pretty URL’s and work with human-friendly strings. https://github.com/norman/friendly_id
+gem 'friendly_id'
 # Ruby lib for dealing with GTFS. https://github.com/nerdEd/gtfs
 gem 'gtfs'
