@@ -1,14 +1,96 @@
+<head>
+  <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+  <style>
+    /* Always set the map height explicitly to define the size of the div
+     * element that contains the map. */
+    #map {
+      height: 100%;
+    }
+    /* Optional: Makes the sample page fill the window. */
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+  </style>
+</head>
+
 <p id="notice"><%= notice %></p>
 
 <center><h1><%= @route.name %></h1></center>
 <center>Managed by <%= link_to @route.agency.name, @route.agency.url %> (<%= @route.agency.phone %>)</center>
 
-<p>
-<% @route.trips.each do |trip| -%>
-<% next unless trip.service.valid_today? -%>
-	<p><%= link_to 'Go', trip %><br /><%= trip.external_id %>: <%= trip.inspect %></p>
+<% @stops.sort.each do |_, stop| -%>
+  <div class="stop" style="margin-bottom: 10px">
+    <b><%= stop['name'] %></b><br />
+    <% stop['times'].each do |time| -%>
+      <%= time %><br />
+    <% end -%>
+  </div>
 <% end -%>
-</p>
 
+<% if @shapes.any? -%>
+<div id="map"></div>
+<script>
+function initMap() {
+  var bounds = new google.maps.LatLngBounds();
 
-<%= @route.inspect %>
+  var map = new google.maps.Map(document.getElementById('map'), {
+    mapTypeId: google.maps.MapTypeId.ROADMAP
+  });
+
+<% @shapes.each do |shape| %>
+  var tripCoordinates = [
+  <% shape.points.order(:sequence).each do |point| -%>
+    {lat: <%= point.lattitude %>, lng: <%= point.longitude %>},
+  <% end -%>
+  ];
+  var tripPath = new google.maps.Polyline({
+    path: tripCoordinates,
+    geodesic: true,
+    strokeColor: "#<%= @route.color %>",
+    strokeOpacity: 1.0,
+    strokeWeight: 4,
+    map: map
+  });
+<% end -%>
+
+<% @stop_objects.each do |stop| -%>
+  var marker = new google.maps.Marker({
+    position: {lat: <%= stop.lattitude %>, lng: <%= stop.longitude %>},
+    title: '<%= stop.name %>',
+    icon: {
+      path: google.maps.SymbolPath.CIRCLE,
+      scale: 4,
+      strokeWeight: 2,
+      fillColor: '#FFFFFF',
+      fillOpacity: 1
+    },
+    map: map
+  });
+
+  bounds.extend(marker.position);
+<% end -%>
+
+<% @vehicles.each do |vehicle|  -%>
+  var marker = new google.maps.Marker({
+    position: {lat: <%= vehicle["vehicle_lat"] %>, lng: <%= vehicle["vehicle_lon"] %>},
+    title: 'Hello World!',
+    icon: {
+      path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
+      scale: 4,
+      strokeWeight: 2,
+      fillColor: '#FFFFFF',
+      fillOpacity: 0.75,
+      rotation: <%= vehicle["vehicle_bearing"] %>
+    },
+    map: map
+  });
+<% end -%>
+
+map.fitBounds(bounds);
+}
+
+</script>
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=<%= ENV['GOOGLE_API_KEY'] %>&callback=initMap"></script>
+<% end -%>

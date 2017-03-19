@@ -1,5 +1,6 @@
 class Service < ApplicationRecord
   has_many :service_addendums
+  has_one :trip
 
   validates_uniqueness_of :external_id
 

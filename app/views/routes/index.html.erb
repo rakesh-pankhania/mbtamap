@@ -10,16 +10,13 @@
   </thead>
 
   <tbody>
-    <% @routes.each do |route| %>
-      <tr>
-        <td><%= link_to(route.long_name == "" ? route.short_name : route.long_name, route) %></td>
-        <td><%= link_to 'Edit', edit_route_path(route) %></td>
-        <td><%= link_to 'Destroy', route, method: :delete, data: { confirm: 'Are you sure?' } %></td>
-      </tr>
-    <% end %>
+    <% @grouped_routes.each do |type, routes| -%>
+    <tr><td colspan="3"><b><%= Route::ROUTE_TYPES[type] %></b></td></tr>
+    <% routes.each do |route| -%>
+    <tr>
+      <td><%= link_to(route.long_name == "" ? route.short_name : route.long_name, route) %></td>
+    </tr>
+    <% end -%>
+    <% end -%>
   </tbody>
 </table>
-
-<br>
-
-<%= link_to 'New Route', new_route_path %>
