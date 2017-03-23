@@ -6,7 +6,9 @@ class Trip < ApplicationRecord
 
   validates_uniqueness_of :external_id
 
+  DIRECTIONS = %w(outbound inbound)
+
   def direction
-    %w(Outbound Inbound)[direction_id]
+    DIRECTIONS[direction_id].titleize
   end
 end
