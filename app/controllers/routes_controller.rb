@@ -9,9 +9,9 @@ class RoutesController < ApplicationController
 
   def show
     # TODO: predictionsbyroute returns alert headers, display them?
-    direction_name = params[:direction].nil? ? 'outbound' : params[:direction].downcase
-    direction = Trip::DIRECTIONS.find_index(direction_name)
-    puts "Direction is #{direction_name}(#{direction}) based on #{params[:direction]}"
+
+    direction_name = route_params[:direction]
+    direction_id = Trip::DIRECTIONS.find_index(direction_name)
 
     # Get route predictions
     prediction_json = JSON.parse(
@@ -22,7 +22,7 @@ class RoutesController < ApplicationController
           query: {
             api_key: ENV['MBTA_API_KEY'],
             route: @route.external_id,
-            direction: direction,
+            direction: direction_id,
             format: 'json'
           }.to_query
         )
@@ -32,7 +32,7 @@ class RoutesController < ApplicationController
     @stops = {}.with_indifferent_access
     @trip_ids = Set.new
     @stop_ids = Set.new
-    trips = prediction_json['direction'][direction]['trip']
+    trips = prediction_json['direction'][direction_id]['trip']
     trips.each do |trip|
       @trip_ids << trip['trip_id']
       trip['stop'].each do |stop|
@@ -69,7 +69,7 @@ class RoutesController < ApplicationController
       )
     )
     @vehicles = []
-    realtime_json["direction"][direction]["trip"].each do |trip|
+    realtime_json["direction"][direction_id]["trip"].each do |trip|
       @vehicles << trip['vehicle']
     end
 
@@ -81,5 +81,9 @@ class RoutesController < ApplicationController
 
   def set_route
     @route = Route.find(params[:id])
+  end
+
+  def route_params
+    params.permit(:id, :direction)
   end
 end
