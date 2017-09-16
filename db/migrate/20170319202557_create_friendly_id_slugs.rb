@@ -14,8 +14,5 @@ class CreateFriendlyIdSlugs < ActiveRecord::Migration
 
     # Add 'slug' column to routes table
     add_column :routes, :slug, :string, index: true
-
-    # Save slugs for persisted routes
-    Route.find_each(&:save!)
   end
 end

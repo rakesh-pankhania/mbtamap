@@ -1,8 +1,6 @@
 class Service < ApplicationRecord
-  has_many :service_addendums
-  has_one :trip
-
-  validates_uniqueness_of :external_id
+  has_many :service_addendums, foreign_key: 'service_external_id', primary_key: 'external_id'
+  has_one :trip, foreign_key: 'service_external_id', primary_key: 'external_id'
 
   def valid_today?
   	service_addendums.each do |service_addendum|

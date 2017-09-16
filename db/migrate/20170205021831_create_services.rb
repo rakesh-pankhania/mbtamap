@@ -1,7 +1,7 @@
 class CreateServices < ActiveRecord::Migration[5.0]
   def change
     create_table :services do |t|
-      t.string   :external_id, null: false
+      t.string   :external_id, null: false, unique: true, index: true
       t.boolean  :monday, null: false
       t.boolean  :tuesday, null: false
       t.boolean  :wednesday, null: false

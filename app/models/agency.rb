@@ -1,5 +1,3 @@
 class Agency < ApplicationRecord
-  has_many :routes
-
-  validates_uniqueness_of :external_id
+  has_many :routes, foreign_key: 'agency_external_id', primary_key: 'external_id'
 end

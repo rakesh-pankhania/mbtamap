@@ -1,12 +1,6 @@
 class StopTime < ApplicationRecord
-	belongs_to :stop
-	belongs_to :trip
+	belongs_to :stop, foreign_key: 'stop_external_id', primary_key: 'external_id'
+	belongs_to :trip, foreign_key: 'trip_external_id', primary_key: 'external_id'
 
-  def arrival_time
-    (DateTime.now.at_midnight + arrival_minutes_past_midnight.minutes).strftime("%l:%M %P")
-  end
-
-  def departure_time
-    (DateTime.now.at_midnight + departure_minutes_past_midnight.minutes).strftime("%l:%M %P")
-  end
+  attr_accessor :predicted_arrival_time
 end

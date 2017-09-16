@@ -30,12 +30,12 @@ namespace :gtfs do
     Rake::Task["gtfs:load_feed"].invoke
     Rake::Task["gtfs:load_agencies"].invoke
     Rake::Task["gtfs:load_routes"].invoke
-    Rake::Task["gtfs:load_services"].invoke
-    Rake::Task["gtfs:load_shapes"].invoke
     Rake::Task["gtfs:load_trips"].invoke
+    Rake::Task["gtfs:load_shapes"].invoke
     Rake::Task["gtfs:load_stops"].invoke
     Rake::Task["gtfs:load_stop_times"].invoke
     Rake::Task["gtfs:load_transfers"].invoke
+    Rake::Task["gtfs:load_services"].invoke
 
     puts "=== Finished ==="
   end
@@ -44,7 +44,7 @@ namespace :gtfs do
     @source ||= load_source
     puts "Loading feed metadata"
 
-    raise if @source.feed_infos.count > 1
+    raise unless @source.feed_infos.count == 1
     feed = @source.feed_infos.first
     Feed.create!(
       publisher_name: feed.publisher_name,
@@ -79,11 +79,10 @@ namespace :gtfs do
     puts "Loading routes"
 
     Route.transaction do
-      agency = nil
       @source.each_route do |route|
-        agency = Agency.find_by!(external_id: route.agency_id) if agency.nil? || agency.external_id != route.agency_id.to_s
-        agency.routes.create!(
+        Route.create!(
           external_id: route.id,
+          agency_external_id: route.agency_id,
           short_name: route.short_name,
           long_name: route.long_name,
           description: route.desc,
@@ -91,6 +90,113 @@ namespace :gtfs do
           url: route.url,
           color: route.color,
           text_color: route.text_color
+        )
+      end
+    end
+  end
+
+  task load_trips: :environment do
+    @source ||= load_source
+    puts "Loading trips"
+
+    trips = []
+    attributes = [
+      :external_id, :route_external_id, :service_external_id,
+      :shape_external_id, :headsign, :short_name, :direction_id, :block_id,
+      :wheelchair_accessible
+    ]
+    @source.each_trip do |trip|
+      trips << [
+        trip.id, trip.route_id, trip.service_id, trip.shape_id, trip.headsign,
+        trip.short_name, trip.direction_id, trip.block_id,
+        trip.wheelchair_accessible
+      ]
+    end
+
+    Trip.import attributes, trips, validate: false
+  end
+
+  task load_shapes: :environment do
+    @source ||= load_source
+    puts "Loading shapes"
+
+    points = []
+    shapes = []
+    point_attributes = [
+      :shape_external_id, :lattitude, :longitude, :sequence, :dist_traveled
+    ]
+    shape_attributes = [:external_id]
+    shape_ids = Set.new
+
+    @source.each_shape do |shape|
+      points << [
+        shape.id, shape.pt_lat, shape.pt_lon, shape.pt_sequence,
+        shape.dist_traveled
+      ]
+
+      shape_ids << shape.id
+    end
+
+    shape_ids.each do |shape_id|
+      shapes << [shape_id]
+    end
+
+    Shape.transaction do
+      Shape.import shape_attributes, shapes, validate: false
+      Point.import point_attributes, points, validate: false
+    end
+  end
+
+  task load_stops: :environment do
+    @source ||= load_source
+    puts "Loading stops"
+
+    stops = []
+    attributes = [
+      :external_id, :parent_station_external_id, :code, :name, :description,
+      :lattitude, :longitude, :url, :location_type, :wheelchair_boarding
+    ]
+    @source.each_stop do |stop|
+      stops << [
+        stop.id, stop.parent_station, stop.code, stop.name, stop.desc, stop.lat,
+        stop.lon, stop.url, stop.location_type, stop.wheelchair_boarding
+      ]
+    end
+
+    Stop.import attributes, stops, validate: false
+  end
+
+  task load_stop_times: :environment do
+    @source ||= load_source
+    puts "Loading stop times"
+
+    stop_times = []
+    attributes = [
+      :stop_external_id, :trip_external_id, :arrival_time, :departure_time,
+      :stop_sequence, :stop_headsign, :pickup_type, :drop_off_type
+    ]
+    @source.each_stop_time do |stop_time|
+      stop_times << [
+        stop_time.stop_id, stop_time.trip_id, stop_time.arrival_time,
+        stop_time.departure_time, stop_time.stop_sequence,
+        stop_time.stop_headsign, stop_time.pickup_type, stop_time.drop_off_type
+      ]
+    end
+
+    StopTime.import attributes, stop_times, validate: false
+  end
+
+  task load_transfers: :environment do
+    @source ||= load_source
+    puts "Loading transfers"
+
+    Transfer.transaction do
+      @source.each_transfer do |transfer|
+        Transfer.create!(
+          from_stop_external_id: transfer.from_stop_id,
+          to_stop_external_id: transfer.to_stop_id,
+          transfer_type: transfer.type,
+          min_transfer_time: transfer.min_transfer_time
         )
       end
     end
@@ -116,10 +222,9 @@ namespace :gtfs do
         )
       end
 
-      service = nil
       @source.each_calendar_date do |calendar_date|
-        service = Service.find_by!(external_id: calendar_date.service_id) if service.nil? || service.external_id != calendar_date.service_id.to_s
-        service.service_addendums.create!(
+        ServiceAddendum.create!(
+          service_external_id: calendar_date.service_id,
           date: Date.parse(calendar_date.date),
           exception_type: calendar_date.exception_type
         )
@@ -127,118 +232,7 @@ namespace :gtfs do
     end
   end
 
-  task load_trips: :environment do
-    @source ||= load_source
-    puts "Loading trips"
-
-    services = Hash[ Service.all.map { |s| [s.external_id, s] } ]
-
-    Trip.transaction do
-      route = nil
-      @source.each_trip do |trip|
-        route = Route.find_by!(external_id: trip.route_id) if route.nil? || route.external_id != trip.route_id.to_s
-        shape = trip.shape_id.blank? ? nil : Shape.find_by!(external_id: trip.shape_id)
-        route.trips.create!(
-          external_id: trip.id,
-          service: services[trip.service_id],
-          shape: shape,
-          headsign: trip.headsign,
-          short_name: trip.short_name,
-          direction_id: trip.direction_id,
-          block_id: trip.block_id,
-          wheelchair_accessible: trip.wheelchair_accessible
-        )
-      end
-    end
-  end
-
-  task load_stops: :environment do
-    @source ||= load_source
-    puts "Loading stops"
-
-    Stop.transaction do
-      @source.each_stop do |stop|
-        Stop.create!(
-          external_id: stop.id,
-          code: stop.code,
-          name: stop.name,
-          description: stop.desc,
-          lattitude: stop.lat,
-          longitude: stop.lon,
-          url: stop.url,
-          location_type: stop.location_type,
-          wheelchair_boarding: stop.wheelchair_boarding
-        )
-      end
-      @source.each_stop do |stop|
-        next if stop.parent_station.to_s == ""
-        parent_station = Stop.find_by!(external_id: stop.parent_station)
-        Stop.find_by!(external_id: stop.id).update!(parent_station: parent_station)
-      end
-    end
-  end
-
-  task load_stop_times: :environment do
-    @source ||= load_source
-    puts "Loading stop times"
-
-    StopTime.transaction do
-      trip = nil
-      @source.each_stop_time do |stop_time|
-        trip = Trip.find_by!(external_id: stop_time.trip_id) if trip.nil? || trip.external_id != stop_time.trip_id.to_s
-        stop = Stop.find_by!(external_id: stop_time.stop_id)
-        arrival_time = stop_time.arrival_time.to_s.split(":")
-        departure_time = stop_time.departure_time.to_s.split(":")
-        trip.stop_times.create!(
-          stop: stop,
-          arrival_minutes_past_midnight: (arrival_time[0].to_i * 60 + arrival_time[1].to_i),
-          departure_minutes_past_midnight: (departure_time[0].to_i * 60 + departure_time[1].to_i),
-          stop_sequence: stop_time.stop_sequence,
-          stop_headsign: stop_time.stop_headsign,
-          pickup_type: stop_time.pickup_type,
-          drop_off_type: stop_time.drop_off_type
-        )
-      end
-    end
-  end
-
-  task load_transfers: :environment do
-    @source ||= load_source
-    puts "Loading transfers"
-
-    Transfer.transaction do
-      @source.each_transfer do |transfer|
-        from_stop = Stop.find_by!(external_id: transfer.from_stop_id)
-        to_stop = Stop.find_by!(external_id: transfer.to_stop_id)
-        Transfer.create!(
-          from_stop: from_stop,
-          to_stop: to_stop,
-          transfer_type: transfer.type,
-          min_transfer_time: transfer.min_transfer_time
-        )
-      end
-    end
-  end
-
-  task load_shapes: :environment do
-    @source ||= load_source
-    puts "Loading shapes"
-
-    Shape.transaction do
-      curr_shape = nil
-      @source.each_shape do |shape|
-        if curr_shape.nil? || curr_shape.external_id != shape.id
-          curr_shape = Shape.find_or_create_by(external_id: shape.id)
-        end
-        curr_shape.points.create!(
-          lattitude: shape.pt_lat,
-          longitude: shape.pt_lon,
-          sequence: shape.pt_sequence,
-          dist_traveled: shape.dist_traveled
-        )
-      end
-    end
-  end
+  private
 
   def load_source
     puts "Loading file"

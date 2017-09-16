@@ -1,10 +1,9 @@
 class Route < ApplicationRecord
   extend FriendlyId
 
-  belongs_to :agency
-  has_many :trips
+  belongs_to :agency, foreign_key: 'agency_external_id', primary_key: 'external_id'
+  has_many :trips, foreign_key: 'route_external_id', primary_key: 'external_id'
 
-  validates_uniqueness_of :external_id
   validate :name_given
   validate :route_type_within_range
 

@@ -1,6 +1,4 @@
 class Shape < ApplicationRecord
-  has_many :points
-  has_many :trips
-
-  validates_uniqueness_of :external_id
+  has_many :points, foreign_key: 'shape_external_id', primary_key: 'external_id'
+  has_many :trips, foreign_key: 'shape_external_id', primary_key: 'external_id'
 end

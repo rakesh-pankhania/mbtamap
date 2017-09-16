@@ -27,9 +27,11 @@ gem 'coffee-rails', '~> 4.2'
 
 # Use jquery as the JavaScript library
 gem 'jquery-rails'
-# Turbolinks makes navigating your web application faster. Read more: https://github.com/turbolinks/turbolinks
+# Turbolinks makes navigating your web application faster
+# https://github.com/turbolinks/turbolinks
 gem 'turbolinks', '~> 5'
-# Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
+# Build JSON APIs with ease
+# https://github.com/rails/jbuilder
 gem 'jbuilder', '~> 2.5'
 # Use Redis adapter to run Action Cable in production
 # gem 'redis', '~> 3.0'
@@ -53,14 +55,17 @@ group :development do
   gem 'spring-watcher-listen', '~> 2.0.0'
 end
 
+# A library for bulk insertion of data into your database using ActiveRecord
+# https://github.com/zdennis/activerecord-import
+gem 'activerecord-import'
+# Bootstrap 4 Ruby Gem for Rails.
+# https://github.com/twbs/bootstrap-rubygem
+gem 'bootstrap'
+# Create pretty URL’s and work with human-friendly strings.
+# https://github.com/norman/friendly_id
+gem 'friendly_id'
+# Ruby lib for dealing with GTFS.
+# https://github.com/nerdEd/gtfs
+gem 'gtfs'
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 # gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
-
-# Override migration methods to support UUID columns. https://github.com/fnando/ar-uuid
-gem 'ar-uuid'
-# Bootstrap 4 Ruby Gem for Rails. https://github.com/twbs/bootstrap-rubygem
-gem 'bootstrap'
-# Create pretty URL’s and work with human-friendly strings. https://github.com/norman/friendly_id
-gem 'friendly_id'
-# Ruby lib for dealing with GTFS. https://github.com/nerdEd/gtfs
-gem 'gtfs'
