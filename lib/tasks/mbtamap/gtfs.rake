@@ -236,6 +236,6 @@ namespace :gtfs do
 
   def load_source
     puts "Loading file"
-    @source = GTFS::Source.build("http://www.mbta.com/uploadedfiles/MBTA_GTFS.zip")
+    @source = GTFS::Source.build("https://cdn.mbta.com/MBTA_GTFS.zip")
   end
 end
