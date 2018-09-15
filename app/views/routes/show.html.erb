@@ -20,15 +20,6 @@
 <center><h1><%= @route.name %></h1></center>
 <center>Managed by <%= link_to @route.agency.name, @route.agency.url %> (<%= @route.agency.phone %>)</center>
 
-<% @stops.sort.each do |_, stop| -%>
-  <div class="stop" style="margin-bottom: 10px">
-    <b><%= stop['name'] %></b><br />
-    <% stop['times'].each do |time| -%>
-      <%= time %><br />
-    <% end -%>
-  </div>
-<% end -%>
-
 <% if @shapes.any? -%>
 <div id="map"></div>
 <script>
@@ -55,7 +46,7 @@ function initMap() {
   });
 <% end -%>
 
-<% @stop_objects.each do |stop| -%>
+<% @stops.each do |stop| -%>
   var marker = new google.maps.Marker({
     position: {lat: <%= stop.lattitude %>, lng: <%= stop.longitude %>},
     title: '<%= stop.name %>',
@@ -74,7 +65,7 @@ function initMap() {
 
 <% @vehicles.each do |vehicle|  -%>
   var marker = new google.maps.Marker({
-    position: {lat: <%= vehicle["vehicle_lat"] %>, lng: <%= vehicle["vehicle_lon"] %>},
+    position: {lat: <%= vehicle["attributes"]["latitude"] %>, lng: <%= vehicle["attributes"]["longitude"] %>},
     title: 'Hello World!',
     icon: {
       path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
@@ -82,7 +73,7 @@ function initMap() {
       strokeWeight: 2,
       fillColor: '#FFFFFF',
       fillOpacity: 0.75,
-      rotation: <%= vehicle["vehicle_bearing"] %>
+      rotation: <%= vehicle["attributes"]["bearing"] %>
     },
     map: map
   });
