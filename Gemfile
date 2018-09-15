@@ -25,6 +25,10 @@ gem 'coffee-rails', '~> 4.2'
 # See https://github.com/rails/execjs#readme for more supported runtimes
 # gem 'therubyracer', platforms: :ruby
 
+# A Ruby gem to load environment variables from .env
+# https://github.com/bkeepers/dotenv
+gem 'dotenv-rails'
+
 # Use jquery as the JavaScript library
 gem 'jquery-rails'
 # Turbolinks makes navigating your web application faster
