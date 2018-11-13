@@ -21,7 +21,9 @@ class Route < ApplicationRecord
   ]
 
   def name
-    return long_name.blank? ? short_name : long_name
+    return "#{short_name} (#{long_name})" if short_name && long_name
+    return short_name if short_name
+    long_name
   end
 
   def route_type_name

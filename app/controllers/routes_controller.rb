@@ -1,7 +1,7 @@
 require 'net/http'
 
 class RoutesController < ApplicationController
-  before_action :set_route, only: [:show, :edit, :update, :destroy]
+  before_action :set_route, only: [:show, :edit, :update, :destroy, :vehicles]
 
   def index
     @grouped_routes = Route.all.group_by(&:route_type)
@@ -36,6 +36,25 @@ class RoutesController < ApplicationController
         )
       )
     )['data']
+  end
+
+  def vehicles
+    direction_id = Trip::DIRECTIONS.find_index(route_params[:direction])
+    
+    respond_to do |format|
+      format.json { render json: JSON.parse(
+        Net::HTTP.get(
+          URI::HTTPS.build(
+            host: "api-v3.mbta.com",
+            path: "/vehicles",
+            query: {
+              'filter[route]': @route.external_id,
+              'filter[direction_id]': direction_id
+            }.to_query
+          )
+        )
+      )['data'] }
+    end
   end
 
   private

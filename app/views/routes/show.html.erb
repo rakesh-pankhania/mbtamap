@@ -112,6 +112,44 @@ function initMap() {
   map.fitBounds(bounds);
 }
 
+function addOrUpdateVehicle(vehicle) {
+  console.log(vehicle);
+  var marker = vehicleStore[vehicle.id];
+
+  if (marker == null) {
+    console.log("Adding " + vehicle.id);
+  } else {
+    console.log("Updating" + vehicle.id);
+    marker.setPosition({
+      lat: vehicle.attributes.latitude,
+      lng: vehicle.attributes.longitude
+    });
+    var icon = marker.getIcon();
+    icon.rotation = vehicle.attributes.bearing;
+    marker.setIcon(icon);
+  }
+}
+
+function addVehicle(vehicle) {
+
+}
+
+function getVehicles() {
+  console.log("GETTING");
+  $.ajax({
+    url: "<%= route_direction_vehicles_path(@route) %>",
+    context: document.body,
+    success: function(rv){
+      rv.forEach(addOrUpdateVehicle);
+    },
+    error: function() {
+      console.log("ERROR connecting");
+    }
+  });
+}
+
+setInterval(getVehicles, 10*1000);
+
 </script>
 <script async defer src="https://maps.googleapis.com/maps/api/js?key=<%= ENV['GOOGLE_API_KEY'] %>&callback=initMap"></script>
 <% end -%>
