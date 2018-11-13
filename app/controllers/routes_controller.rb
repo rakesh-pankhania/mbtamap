@@ -9,6 +9,7 @@ class RoutesController < ApplicationController
 
   def show
     direction_id = Trip::DIRECTIONS.find_index(route_params[:direction])
+    @direction = route_params[:direction]
 
     trip_ids = Trip.where(
       route_external_id: @route.external_id,

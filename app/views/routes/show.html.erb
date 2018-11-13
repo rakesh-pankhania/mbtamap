@@ -18,19 +18,28 @@
 <p id="notice"><%= notice %></p>
 
 <center><h1><%= @route.name %></h1></center>
-<center>Managed by <%= link_to @route.agency.name, @route.agency.url %> (<%= @route.agency.phone %>)</center>
+<center>Managed by <%= link_to @route.agency.name, @route.agency.url %> (<%= link_to(@route.agency.phone, "tel:#{@route.agency.phone}") %>)</center>
+
+<div class="btn-group">
+  <%= link_to 'Inbound', route_direction_path(@route, 'inbound'), class: direction_button_style('inbound') %>
+  <%= link_to 'Outbound', route_direction_path(@route, 'outbound'), class: direction_button_style('outbound') %>
+</div>
 
 <% if @shapes.any? -%>
 <div id="map"></div>
 <script>
+var vehicleStore = [];
+var map;
+
 function initMap() {
   var bounds = new google.maps.LatLngBounds();
 
-  var map = new google.maps.Map(document.getElementById('map'), {
-    mapTypeId: google.maps.MapTypeId.ROADMAP
-  });
+  map = new google.maps.Map(
+    document.getElementById('map'),
+    { mapTypeId: google.maps.MapTypeId.ROADMAP }
+  );
 
-<% @shapes.each do |shape| %>
+  <% @shapes.each do |shape| -%>
   var tripCoordinates = [
   <% shape.points.order(:sequence).each do |point| -%>
     {lat: <%= point.lattitude %>, lng: <%= point.longitude %>},
@@ -44,9 +53,9 @@ function initMap() {
     strokeWeight: 4,
     map: map
   });
-<% end -%>
+  <% end -%>
 
-<% @stops.each do |stop| -%>
+  <% @stops.each do |stop| -%>
   var marker = new google.maps.Marker({
     position: {lat: <%= stop.lattitude %>, lng: <%= stop.longitude %>},
     title: '<%= stop.name %>',
@@ -61,12 +70,11 @@ function initMap() {
   });
 
   bounds.extend(marker.position);
-<% end -%>
+  <% end -%>
 
-<% @vehicles.each do |vehicle|  -%>
+  <% @vehicles.each do |vehicle|  -%>
   var marker = new google.maps.Marker({
     position: {lat: <%= vehicle["attributes"]["latitude"] %>, lng: <%= vehicle["attributes"]["longitude"] %>},
-    title: 'Hello World!',
     icon: {
       path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
       scale: 4,
@@ -77,7 +85,9 @@ function initMap() {
     },
     map: map
   });
-<% end -%>
+
+  vehicleStore['<%= vehicle['id'] %>'] = marker;
+  <% end -%>
 
   // Try HTML5 geolocation.
   if (navigator.geolocation) {

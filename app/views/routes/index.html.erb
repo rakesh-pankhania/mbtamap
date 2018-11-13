@@ -14,7 +14,7 @@
     <tr><td colspan="3"><b><%= Route::ROUTE_TYPES[type] %></b></td></tr>
     <% routes.sort_by(&:name).each do |route| -%>
     <tr>
-      <td><%= link_to(route.long_name == "" ? route.short_name : route.long_name, route) %></td>
+      <td><%= link_to(route.long_name == "" ? route.short_name : route.long_name, route_direction_path(route, 'inbound')) %></td>
     </tr>
     <% end -%>
     <% end -%>
