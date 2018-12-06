@@ -72,22 +72,8 @@ function initMap() {
   bounds.extend(marker.position);
   <% end -%>
 
-  <% @vehicles.each do |vehicle|  -%>
-  var marker = new google.maps.Marker({
-    position: {lat: <%= vehicle["attributes"]["latitude"] %>, lng: <%= vehicle["attributes"]["longitude"] %>},
-    icon: {
-      path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
-      scale: 4,
-      strokeWeight: 2,
-      fillColor: '#FFFFFF',
-      fillOpacity: 0.75,
-      rotation: <%= vehicle["attributes"]["bearing"] %>
-    },
-    map: map
-  });
-
-  vehicleStore['<%= vehicle['id'] %>'] = marker;
-  <% end -%>
+  var vehicles = JSON.parse('<%= raw(@vehicles.to_json) %>');
+  vehicles.forEach(addVehicle);
 
   // Try HTML5 geolocation.
   if (navigator.geolocation) {
@@ -112,26 +98,88 @@ function initMap() {
   map.fitBounds(bounds);
 }
 
-function addOrUpdateVehicle(vehicle) {
-  console.log(vehicle);
-  var marker = vehicleStore[vehicle.id];
+function resolveVehicles(vehicles) {
+  //
+  // Remove any vehicles that have terminated
+  //
 
-  if (marker == null) {
-    console.log("Adding " + vehicle.id);
-  } else {
-    console.log("Updating" + vehicle.id);
-    marker.setPosition({
-      lat: vehicle.attributes.latitude,
-      lng: vehicle.attributes.longitude
-    });
-    var icon = marker.getIcon();
-    icon.rotation = vehicle.attributes.bearing;
-    marker.setIcon(icon);
-  }
+  console.log("== START RESOLVE ==");
+
+  console.log(vehicles);
+  console.log(vehicleStore);
+
+  var activeVehicleIds = new Set(vehicles.map(function(vehicle) {
+    return vehicle.id
+  }));
+
+  console.log("activeVehicleIds");
+  console.log(activeVehicleIds);
+  console.log("vehicleStore");
+  console.log(Object.keys(vehicleStore));
+
+  let idsToRemove = new Set(
+    [...new Set(Object.keys(vehicleStore))].filter(x => !activeVehicleIds.has(x))
+  );
+
+  console.log("idsToRemove");
+  console.log(idsToRemove);
+
+  idsToRemove.forEach(function(vehicleId) {
+    console.log("Trying to delete " + vehicleId);
+
+    var marker = vehicleStore[vehicleId];
+    console.log("marker");
+    console.log(marker);
+    marker.setMap(null);
+    console.log("DELETING " + vehicleId + ": " + vehicleStore[vehicleId]);
+    delete vehicleStore[vehicleId]
+    console.log("DELETED " + vehicleId + ": " + vehicleStore[vehicleId] + "?");
+  });
+
+  vehicles.forEach(function(vehicle) {
+    // console.log(vehicle);
+    var marker = vehicleStore[vehicle.id];
+    if (marker == null) {
+      console.log("MARKER " + vehicle.id + "IS NULL");
+    }
+
+    if (marker == null) {
+      addVehicle(vehicle);
+    } else {
+      // console.log("Updating " + vehicle.id);
+      marker.setPosition({
+        lat: vehicle.attributes.latitude,
+        lng: vehicle.attributes.longitude
+      });
+      var icon = marker.getIcon();
+      icon.rotation = vehicle.attributes.bearing;
+      marker.setIcon(icon);
+    }
+  });
+
+  console.log("== END RESOLVE ==");
 }
 
 function addVehicle(vehicle) {
+  // console.log("Adding " + vehicle.id);
 
+  var marker = new google.maps.Marker({
+    position: {
+      lat: vehicle.attributes.latitude,
+      lng: vehicle.attributes.longitude
+    },
+    icon: {
+      path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
+      scale: 4,
+      strokeWeight: 2,
+      fillColor: '#FFFFFF',
+      fillOpacity: 0.75,
+      rotation: vehicle.attributes.bearing
+    },
+    map: map
+  });
+
+  vehicleStore[vehicle.id] = marker;
 }
 
 function getVehicles() {
@@ -140,7 +188,7 @@ function getVehicles() {
     url: "<%= route_direction_vehicles_path(@route) %>",
     context: document.body,
     success: function(rv){
-      rv.forEach(addOrUpdateVehicle);
+      resolveVehicles(rv);
     },
     error: function() {
       console.log("ERROR connecting");
