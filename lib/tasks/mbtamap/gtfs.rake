@@ -171,19 +171,26 @@ namespace :gtfs do
     puts "Loading stop times"
 
     stop_times = []
+    incremental_count = 0
     attributes = [
       :stop_external_id, :trip_external_id, :arrival_time, :departure_time,
       :stop_sequence, :stop_headsign, :pickup_type, :drop_off_type
     ]
+
     @source.each_stop_time do |stop_time|
       stop_times << [
         stop_time.stop_id, stop_time.trip_id, stop_time.arrival_time,
         stop_time.departure_time, stop_time.stop_sequence,
         stop_time.stop_headsign, stop_time.pickup_type, stop_time.drop_off_type
       ]
-    end
+      incremental_count += 1
 
-    StopTime.import attributes, stop_times, validate: false
+      if incremental_count > 5000
+        StopTime.import attributes, stop_times, validate: false
+        stop_times = []
+        incremental_count = 0
+      end
+    end
   end
 
   task load_transfers: :environment do
