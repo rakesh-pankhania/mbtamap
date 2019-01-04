@@ -15,4 +15,9 @@ class RoutesController::ShowTest < ActionDispatch::IntegrationTest
       assert_response :success
     end
   end
+
+  test "should redirect non-directioned route to outbound" do
+    get "/#{@route.slug}"
+    assert_redirected_to route_direction_path(@route, 'outbound')
+  end
 end
