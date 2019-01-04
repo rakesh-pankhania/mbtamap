@@ -21,5 +21,7 @@ module Mbtamap
         ENV[k.upcase] ||= v
       end
     end
+
+    config.autoload_paths << Rails.root.join('lib')
   end
 end

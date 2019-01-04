@@ -1,0 +1,46 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: https://api-v3.mbta.com/vehicles?filter%5Bdirection_id%5D=0&filter%5Broute%5D=Green-D
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - Ruby
+      Host:
+      - api-v3.mbta.com
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Cache-Control:
+      - max-age=0, private, must-revalidate
+      Content-Type:
+      - application/vnd.api+json; charset=utf-8
+      Date:
+      - Fri, 04 Jan 2019 21:21:50 GMT
+      Last-Modified:
+      - Fri, 04 Jan 2019 21:21:44 GMT
+      Server:
+      - nginx/1.12.1
+      Strict-Transport-Security:
+      - max-age=31536000
+      X-Request-Id:
+      - 2lrc44qa9m6u7s3ko402hg82
+      Content-Length:
+      - '587'
+      Connection:
+      - keep-alive
+    body:
+      encoding: ASCII-8BIT
+      string: '{"data":[{"attributes":{"bearing":315.0,"current_status":"INCOMING_AT","current_stop_sequence":520,"direction_id":0,"label":"3814-3616","latitude":42.32905960083008,"longitude":-71.17875671386719,"speed":null,"updated_at":"2019-01-04T16:15:03-05:00"},"id":"G-10336","links":{"self":"/vehicles/G-10336"},"relationships":{"route":{"data":{"id":"Green-D","type":"route"}},"stop":{"data":{"id":"70171","type":"stop"}},"trip":{"data":{"id":"ADDED-1545260476","type":"trip"}}},"type":"vehicle"},{"attributes":{"bearing":200.0,"current_status":"INCOMING_AT","current_stop_sequence":100,"direction_id":0,"label":"3867-3649","latitude":42.353050231933594,"longitude":-71.06456756591797,"speed":null,"updated_at":"2019-01-04T16:20:45-05:00"},"id":"G-10137","links":{"self":"/vehicles/G-10137"},"relationships":{"route":{"data":{"id":"Green-D","type":"route"}},"stop":{"data":{"id":"70157","type":"stop"}},"trip":{"data":{"id":"38990975","type":"trip"}}},"type":"vehicle"},{"attributes":{"bearing":225.0,"current_status":"INCOMING_AT","current_stop_sequence":460,"direction_id":0,"label":"3698-3871","latitude":42.344810485839844,"longitude":-71.10530853271484,"speed":null,"updated_at":"2019-01-04T16:21:33-05:00"},"id":"G-10123","links":{"self":"/vehicles/G-10123"},"relationships":{"route":{"data":{"id":"Green-D","type":"route"}},"stop":{"data":{"id":"70183","type":"stop"}},"trip":{"data":{"id":"ADDED-1545260471","type":"trip"}}},"type":"vehicle"},{"attributes":{"bearing":230.0,"current_status":"INCOMING_AT","current_stop_sequence":450,"direction_id":0,"label":"3831-3705","latitude":42.34672164916992,"longitude":-71.10182189941406,"speed":null,"updated_at":"2019-01-04T16:16:11-05:00"},"id":"G-10119","links":{"self":"/vehicles/G-10119"},"relationships":{"route":{"data":{"id":"Green-D","type":"route"}},"stop":{"data":{"id":"70187","type":"stop"}},"trip":{"data":{"id":"38990978","type":"trip"}}},"type":"vehicle"},{"attributes":{"bearing":315.0,"current_status":"STOPPED_AT","current_stop_sequence":570,"direction_id":0,"label":"3885-3681","latitude":42.33723068237305,"longitude":-71.25208282470703,"speed":null,"updated_at":"2019-01-04T16:21:35-05:00"},"id":"G-10056","links":{"self":"/vehicles/G-10056"},"relationships":{"route":{"data":{"id":"Green-D","type":"route"}},"stop":{"data":{"id":"70161","type":"stop"}},"trip":{"data":{"id":"ADDED-1545260482","type":"trip"}}},"type":"vehicle"}],"jsonapi":{"version":"1.0"}}'
+    http_version: 
+  recorded_at: Fri, 04 Jan 2019 21:21:50 GMT
+recorded_with: VCR 4.0.0

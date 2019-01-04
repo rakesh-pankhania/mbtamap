@@ -59,6 +59,21 @@ group :development do
   gem 'spring-watcher-listen', '~> 2.0.0'
 end
 
+group :test do
+  # A library for setting up Ruby objects as test data.
+  # https://github.com/thoughtbot/factory_bot
+  gem 'factory_bot'
+  # A complete suite of testing facilities
+  # https://github.com/seattlerb/minitest
+  gem 'minitest', '5.10.1'
+  # Record your test suite's HTTP interactions and replay them during test runs
+  # https://github.com/vcr/vcr
+  gem 'vcr'
+  # Library for stubbing and setting expectations on HTTP requests in Ruby
+  # https://github.com/bblimke/webmock
+  gem 'webmock'
+end
+
 # A library for bulk insertion of data into your database using ActiveRecord
 # https://github.com/zdennis/activerecord-import
 gem 'activerecord-import'

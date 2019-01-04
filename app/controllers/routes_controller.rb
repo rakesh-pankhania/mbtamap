@@ -24,36 +24,16 @@ class RoutesController < ApplicationController
                  .where(stop_times: { trip_external_id: trip_ids })
                  .distinct
 
-    @vehicles = JSON.parse(
-      Net::HTTP.get(
-        URI::HTTPS.build(
-          host: "api-v3.mbta.com",
-          path: "/vehicles",
-          query: {
-            'filter[route]': @route.external_id,
-            'filter[direction_id]': direction_id
-          }.to_query
-        )
-      )
-    )['data']
+    @vehicles = Mbta::Client.new.get_vehicles(route: @route.external_id, direction: direction_id)
   end
 
   def vehicles
     direction_id = Trip::DIRECTIONS.find_index(route_params[:direction])
-    
+
     respond_to do |format|
-      format.json { render json: JSON.parse(
-        Net::HTTP.get(
-          URI::HTTPS.build(
-            host: "api-v3.mbta.com",
-            path: "/vehicles",
-            query: {
-              'filter[route]': @route.external_id,
-              'filter[direction_id]': direction_id
-            }.to_query
-          )
-        )
-      )['data'] }
+      format.json do
+        render json: Mbta::Client.new.get_vehicles(route: @route.external_id, direction: direction_id)
+      end
     end
   end
 
