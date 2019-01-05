@@ -1,13 +1,15 @@
+# frozen_string_literal: true
+
 require 'open-uri'
 
 namespace :gtfs do
-  desc "Perform GTFS operations"
+  desc 'Perform GTFS operations'
   task update: :environment do
-    FEED_INFO_PATH = "http://www.mbta.com/uploadedfiles/feed_info.txt"
+    FEED_INFO_PATH = 'http://www.mbta.com/uploadedfiles/feed_info.txt'
     puts "Connecting to #{FEED_INFO_PATH}"
-    feed_data = open("http://www.mbta.com/uploadedfiles/feed_info.txt").read
+    feed_data = open('http://www.mbta.com/uploadedfiles/feed_info.txt').read
 
-    puts "Parsing data"
+    puts 'Parsing data'
     feed_data = CSV.parse(feed_data, headers: true)
     feed_version = feed_data['feed_version'][0].to_s
     puts "Latest MBTA GTFS version: #{feed_version}"
@@ -17,9 +19,9 @@ namespace :gtfs do
     puts "App running GTFS version: #{current_version}"
 
     if current_version.nil? || feed_version != current_version
-      Rake::Task["gtfs:load"].invoke
+      Rake::Task['gtfs:load'].invoke
     else
-      puts "No update needed"
+      puts 'No update needed'
     end
   end
 
@@ -27,24 +29,25 @@ namespace :gtfs do
     puts "\n=== Loading GTFS ==="
 
     @source = load_source
-    Rake::Task["gtfs:load_feed"].invoke
-    Rake::Task["gtfs:load_agencies"].invoke
-    Rake::Task["gtfs:load_routes"].invoke
-    Rake::Task["gtfs:load_trips"].invoke
-    Rake::Task["gtfs:load_shapes"].invoke
-    Rake::Task["gtfs:load_stops"].invoke
-    Rake::Task["gtfs:load_stop_times"].invoke
-    Rake::Task["gtfs:load_transfers"].invoke
-    Rake::Task["gtfs:load_services"].invoke
+    Rake::Task['gtfs:load_feed'].invoke
+    Rake::Task['gtfs:load_agencies'].invoke
+    Rake::Task['gtfs:load_routes'].invoke
+    Rake::Task['gtfs:load_trips'].invoke
+    Rake::Task['gtfs:load_shapes'].invoke
+    Rake::Task['gtfs:load_stops'].invoke
+    Rake::Task['gtfs:load_stop_times'].invoke
+    Rake::Task['gtfs:load_transfers'].invoke
+    Rake::Task['gtfs:load_services'].invoke
 
-    puts "=== Finished ==="
+    puts '=== Finished ==='
   end
 
   task load_feed: :environment do
     @source ||= load_source
-    puts "Loading feed metadata"
+    puts 'Loading feed metadata'
 
     raise unless @source.feed_infos.count == 1
+
     feed = @source.feed_infos.first
     Feed.create!(
       publisher_name: feed.publisher_name,
@@ -58,7 +61,7 @@ namespace :gtfs do
 
   task load_agencies: :environment do
     @source ||= load_source
-    puts "Loading agencies"
+    puts 'Loading agencies'
 
     Agency.transaction do
       @source.each_agency do |agency|
@@ -76,7 +79,7 @@ namespace :gtfs do
 
   task load_routes: :environment do
     @source ||= load_source
-    puts "Loading routes"
+    puts 'Loading routes'
 
     Route.transaction do
       @source.each_route do |route|
@@ -97,13 +100,13 @@ namespace :gtfs do
 
   task load_trips: :environment do
     @source ||= load_source
-    puts "Loading trips"
+    puts 'Loading trips'
 
     trips = []
-    attributes = [
-      :external_id, :route_external_id, :service_external_id,
-      :shape_external_id, :headsign, :short_name, :direction_id, :block_id,
-      :wheelchair_accessible
+    attributes = %i[
+      external_id route_external_id service_external_id
+      shape_external_id headsign short_name direction_id block_id
+      wheelchair_accessible
     ]
     @source.each_trip do |trip|
       trips << [
@@ -118,12 +121,12 @@ namespace :gtfs do
 
   task load_shapes: :environment do
     @source ||= load_source
-    puts "Loading shapes"
+    puts 'Loading shapes'
 
     points = []
     shapes = []
-    point_attributes = [
-      :shape_external_id, :lattitude, :longitude, :sequence, :dist_traveled
+    point_attributes = %i[
+      shape_external_id lattitude longitude sequence dist_traveled
     ]
     shape_attributes = [:external_id]
     shape_ids = Set.new
@@ -149,12 +152,12 @@ namespace :gtfs do
 
   task load_stops: :environment do
     @source ||= load_source
-    puts "Loading stops"
+    puts 'Loading stops'
 
     stops = []
-    attributes = [
-      :external_id, :parent_station_external_id, :code, :name, :description,
-      :lattitude, :longitude, :url, :location_type, :wheelchair_boarding
+    attributes = %i[
+      external_id parent_station_external_id code name description
+      lattitude longitude url location_type wheelchair_boarding
     ]
     @source.each_stop do |stop|
       stops << [
@@ -168,13 +171,13 @@ namespace :gtfs do
 
   task load_stop_times: :environment do
     @source ||= load_source
-    puts "Loading stop times"
+    puts 'Loading stop times'
 
     stop_times = []
     incremental_count = 0
-    attributes = [
-      :stop_external_id, :trip_external_id, :arrival_time, :departure_time,
-      :stop_sequence, :stop_headsign, :pickup_type, :drop_off_type
+    attributes = %i[
+      stop_external_id trip_external_id arrival_time departure_time
+      stop_sequence stop_headsign pickup_type drop_off_type
     ]
 
     @source.each_stop_time do |stop_time|
@@ -185,17 +188,17 @@ namespace :gtfs do
       ]
       incremental_count += 1
 
-      if incremental_count > 5000
-        StopTime.import attributes, stop_times, validate: false
-        stop_times = []
-        incremental_count = 0
-      end
+      next unless incremental_count > 5000
+
+      StopTime.import attributes, stop_times, validate: false
+      stop_times = []
+      incremental_count = 0
     end
   end
 
   task load_transfers: :environment do
     @source ||= load_source
-    puts "Loading transfers"
+    puts 'Loading transfers'
 
     Transfer.transaction do
       @source.each_transfer do |transfer|
@@ -211,7 +214,7 @@ namespace :gtfs do
 
   task load_services: :environment do
     @source ||= load_source
-    puts "Loading services"
+    puts 'Loading services'
 
     Service.transaction do
       @source.each_calendar do |calendar|
@@ -242,7 +245,7 @@ namespace :gtfs do
   private
 
   def load_source
-    puts "Loading file"
-    @source = GTFS::Source.build("https://cdn.mbta.com/MBTA_GTFS.zip")
+    puts 'Loading file'
+    @source = GTFS::Source.build('https://cdn.mbta.com/MBTA_GTFS.zip')
   end
 end

@@ -1,9 +1,11 @@
+# frozen_string_literal: true
+
 class Mbta::Client
-  BASE_URL = "api-v3.mbta.com"
+  BASE_URL = 'api-v3.mbta.com'
 
   def get_vehicles(route:, direction:)
     get(
-      "/vehicles",
+      '/vehicles',
       params: {
         'filter[route]': route,
         'filter[direction_id]': direction

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Route < ApplicationRecord
   extend FriendlyId
 
@@ -7,22 +9,23 @@ class Route < ApplicationRecord
   validate :name_given
   validate :route_type_within_range
 
-  friendly_id :name, use: [:slugged, :finders]
+  friendly_id :name, use: %i[slugged finders]
 
   ROUTE_TYPES = [
-    "Light rail",
-    "Subway",
-    "Rail",
-    "Bus",
-    "Ferry",
-    "Cable car",
-    "Gondola",
-    "Funicular"
-  ]
+    'Light rail',
+    'Subway',
+    'Rail',
+    'Bus',
+    'Ferry',
+    'Cable car',
+    'Gondola',
+    'Funicular'
+  ].freeze
 
   def name
     return "#{short_name} (#{long_name})" if short_name.present? && long_name.present?
     return short_name if short_name.present?
+
     long_name
   end
 
@@ -30,17 +33,35 @@ class Route < ApplicationRecord
     [route_type]
   end
 
+  def shapes(direction_id)
+    trip_ids = Trip.where(
+      route_external_id: external_id,
+      direction_id: direction_id
+    ).pluck(:external_id)
+
+    Shape.joins(:trips)
+         .where(trips: { external_id: trip_ids })
+         .distinct
+  end
+
+  def stops(direction_id)
+    trip_ids = Trip.where(
+      route_external_id: external_id,
+      direction_id: direction_id
+    ).pluck(:external_id)
+
+    Stop.joins(:stop_times)
+        .where(stop_times: { trip_external_id: trip_ids })
+        .distinct
+  end
+
   private
 
   def name_given
-    if long_name.blank? && short_name.blank?
-      errors.add(:base, "Short or long name must be specified")
-    end
+    errors.add(:base, 'Short or long name must be specified') if long_name.blank? && short_name.blank?
   end
 
   def route_type_within_range
-    if route_type < 0 || route_type > ROUTE_TYPES.length
-      errors.add(:route_type, "Unsupported route type")
-    end
+    errors.add(:route_type, 'Unsupported route type') if route_type.negative? || route_type > ROUTE_TYPES.length
   end
 end

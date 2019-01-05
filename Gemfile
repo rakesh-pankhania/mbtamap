@@ -1,7 +1,9 @@
+# frozen_string_literal: true
+
 source 'https://rubygems.org'
 
 git_source(:github) do |repo_name|
-  repo_name = "#{repo_name}/#{repo_name}" unless repo_name.include?("/")
+  repo_name = "#{repo_name}/#{repo_name}" unless repo_name.include?('/')
   "https://github.com/#{repo_name}.git"
 end
 
@@ -43,6 +45,9 @@ group :development do
   # Listens to file modifications and notifies you about the changes
   # https://github.com/guard/listen
   gem 'listen', '~> 3.0.5'
+  # A Ruby static code analyzer, based on the community Ruby style guide
+  # https://github.com/bbatsov/rubocop.
+  gem 'rubocop', require: false
   # Speeds up development by keeping your application running in the background
   # https://github.com/rails/spring
   gem 'spring'
@@ -75,7 +80,7 @@ gem 'bootstrap'
 # A Ruby gem to load environment variables from .env
 # https://github.com/bkeepers/dotenv
 gem 'dotenv-rails'
-# Create pretty URL’s and work with human-friendly strings.
+# Create pretty URL's and work with human-friendly strings.
 # https://github.com/norman/friendly_id
 gem 'friendly_id'
 # Ruby lib for dealing with GTFS.

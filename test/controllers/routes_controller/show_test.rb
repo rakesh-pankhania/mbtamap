@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'test_helper'
 
 class RoutesController::ShowTest < ActionDispatch::IntegrationTest
@@ -9,14 +11,14 @@ class RoutesController::ShowTest < ActionDispatch::IntegrationTest
     )
   end
 
-  test "should show route" do
-    VCR.use_cassette("get_green_d_outbound_vehicles") do
+  test 'should show route' do
+    VCR.use_cassette('get_green_d_outbound_vehicles') do
       get route_direction_path(@route, 'outbound')
       assert_response :success
     end
   end
 
-  test "should redirect non-directioned route to outbound" do
+  test 'should redirect non-directioned route to outbound' do
     get "/#{@route.slug}"
     assert_redirected_to route_direction_path(@route, 'outbound')
   end
