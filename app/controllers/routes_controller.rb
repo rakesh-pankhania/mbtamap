@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'mbta/client'
 require 'net/http'
 
 class RoutesController < ApplicationController
