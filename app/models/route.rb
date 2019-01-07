@@ -5,6 +5,8 @@ class Route < ApplicationRecord
 
   belongs_to :agency, foreign_key: 'agency_external_id', primary_key: 'external_id'
   has_many :trips, foreign_key: 'route_external_id', primary_key: 'external_id'
+  has_many :shapes, through: :trips
+  has_many :stops, through: :trips
 
   validate :name_given
   validate :route_type_within_range
@@ -31,28 +33,6 @@ class Route < ApplicationRecord
 
   def route_type_name
     [route_type]
-  end
-
-  def shapes(direction_id)
-    trip_ids = Trip.where(
-      route_external_id: external_id,
-      direction_id: direction_id
-    ).pluck(:external_id)
-
-    Shape.joins(:trips)
-         .where(trips: { external_id: trip_ids })
-         .distinct
-  end
-
-  def stops(direction_id)
-    trip_ids = Trip.where(
-      route_external_id: external_id,
-      direction_id: direction_id
-    ).pluck(:external_id)
-
-    Stop.joins(:stop_times)
-        .where(stop_times: { trip_external_id: trip_ids })
-        .distinct
   end
 
   private

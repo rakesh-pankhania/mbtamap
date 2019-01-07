@@ -13,8 +13,8 @@ class RoutesController < ApplicationController
     direction_id = Trip::DIRECTIONS.find_index(route_params[:direction])
 
     @direction = route_params[:direction]
-    @shapes = @route.shapes(@direction)
-    @stops = @route.stops(@direction)
+    @shapes = @route.shapes.where(trips: { direction_id: direction_id }).distinct
+    @stops = @route.stops.where(trips: { direction_id: direction_id }).distinct
     @vehicles = Mbta::Client.new.get_vehicles(route: @route.external_id, direction: direction_id)
   end
 
