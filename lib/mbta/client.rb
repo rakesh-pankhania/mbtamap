@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'net/http'
+
 class Mbta::Client
   BASE_URL = 'api-v3.mbta.com'
 

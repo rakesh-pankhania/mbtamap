@@ -15,7 +15,7 @@ end
 
 # Ruby on Rails
 # https://github.com/rails/rails
-gem 'rails', '~> 5.0.1'
+gem 'rails', '~> 5.1.4'
 # Ruby interface to the PostgreSQL RDBMS
 # https://bitbucket.org/ged/ruby-pg
 gem 'pg', '~> 0.18'

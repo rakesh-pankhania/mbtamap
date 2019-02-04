@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'mbta/client'
-require 'net/http'
 
 class RoutesController < ApplicationController
   before_action :set_route, only: %i[show edit update destroy vehicles]
