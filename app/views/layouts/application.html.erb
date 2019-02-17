@@ -31,16 +31,27 @@
             <%= link_to "Red Line", route_direction_path('red-line', 'inbound'), class: "nav-link" %>
           </li>
           <li class="nav-item">
-            <%= link_to "Green Line", route_direction_path('green-line', 'inbound'), class: "nav-link" %>
-          </li>
-          <li class="nav-item">
             <%= link_to "Orange Line", route_direction_path('orange-line', 'inbound'), class: "nav-link" %>
           </li>
           <li class="nav-item">
             <%= link_to "Blue Line", route_direction_path('blue-line', 'inbound'), class: "nav-link" %>
           </li>
-          <li class="nav-item">
-            <%= link_to "Silver Line", route_direction_path('silver-line', 'inbound'), class: "nav-link" %>
+          <li class="nav-item dropdown bg-dark">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Green Line</a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+              <%= link_to "Green Line B", route_direction_path('green-line-b', 'inbound'), class: "dropdown-item" %>
+              <%= link_to "Green Line C", route_direction_path('green-line-c', 'inbound'), class: "dropdown-item" %>
+              <%= link_to "Green Line D", route_direction_path('green-line-d', 'inbound'), class: "dropdown-item" %>
+              <%= link_to "Green Line E", route_direction_path('green-line-e', 'inbound'), class: "dropdown-item" %>
+            </div>
+          </li>
+          <li class="nav-item dropdown bg-dark">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Buses</a>
+            <div class="dropdown-menu pre-scrollable" aria-labelledby="navbarDropdown">
+              <% Route.where(route_type: 3).each do |bus| -%>
+                <%= link_to bus.name, route_direction_path(bus.slug, 'inbound'), class: "dropdown-item" %>
+              <% end -%>
+            </div>
           </li>
         </ul>
       </div>

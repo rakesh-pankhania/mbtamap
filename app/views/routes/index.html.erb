@@ -1,22 +1,8 @@
 <p id="notice"><%= notice %></p>
 
-<h1>Routes</h1>
+<div class="p-3">
+  <h3>Welcome to MBTA Map</h3>
 
-<table>
-  <thead>
-    <tr>
-      <th colspan="3"></th>
-    </tr>
-  </thead>
-
-  <tbody>
-    <% @grouped_routes.each do |type, routes| -%>
-    <tr><td colspan="3"><b><%= Route::ROUTE_TYPES[type] %></b></td></tr>
-    <% routes.sort_by(&:name).each do |route| -%>
-    <tr>
-      <td><%= link_to(route.long_name == "" ? route.short_name : route.long_name, route_direction_path(route, 'inbound')) %></td>
-    </tr>
-    <% end -%>
-    <% end -%>
-  </tbody>
-</table>
+  I'm still testing this out, please be patient. If you have
+  any comments, send me a message at <%= link_to "mbtamap@gmail.com", "mailto:mbtamap@gmail.com" %>.
+</div>

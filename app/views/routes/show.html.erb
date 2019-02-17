@@ -4,7 +4,7 @@
     /* Always set the map height explicitly to define the size of the div
      * element that contains the map. */
     #map {
-      height: 100%;
+      height: 80%;
     }
     /* Optional: Makes the sample page fill the window. */
     html, body {
@@ -18,7 +18,6 @@
 <p id="notice"><%= notice %></p>
 
 <center><h1><%= @route.name %></h1></center>
-<center>Managed by <%= link_to @route.agency.name, @route.agency.url %> (<%= link_to(@route.agency.phone, "tel:#{@route.agency.phone}") %>)</center>
 
 <div class="btn-group">
   <%= link_to 'Inbound', route_direction_path(@route, 'inbound'), class: direction_button_style('inbound') %>
@@ -90,8 +89,6 @@ function initMap() {
         },
         map: map
       });
-
-      bounds.extend(marker.position);
     });
   }
 
