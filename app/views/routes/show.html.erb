@@ -6,7 +6,7 @@
     #map {
       height: 80%;
     }
-    /* Optional: Makes the sample page fill the window. */
+    /* Makes the page fill the window. */
     html, body {
       height: 100%;
       margin: 0;
@@ -193,8 +193,12 @@ function getVehicles() {
   });
 }
 
-setInterval(getVehicles, 10*1000);
+var interval = setInterval(getVehicles, 10*1000);
 
+$(document).on('turbolinks:before-cache turbolinks:before-render', function() {
+  console.log("Clearing interval");
+  clearTimeout(interval)
+});
 </script>
 <script async defer src="https://maps.googleapis.com/maps/api/js?key=<%= ENV['GOOGLE_API_KEY'] %>&callback=initMap"></script>
 <% end -%>
