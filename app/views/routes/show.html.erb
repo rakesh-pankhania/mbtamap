@@ -1,20 +1,3 @@
-<head>
-  <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
-  <style>
-    /* Always set the map height explicitly to define the size of the div
-     * element that contains the map. */
-    #map {
-      height: 80%;
-    }
-    /* Makes the page fill the window. */
-    html, body {
-      height: 100%;
-      margin: 0;
-      padding: 0;
-    }
-  </style>
-</head>
-
 <p id="notice"><%= notice %></p>
 
 <center><h1><%= @route.name %></h1></center>
@@ -24,181 +7,23 @@
   <%= link_to 'Outbound', route_direction_path(@route, 'outbound'), class: direction_button_style('outbound') %>
 </div>
 
-<% if @shapes.any? -%>
 <div id="map"></div>
+
+<% if @shapes.any? -%>
 <script>
-var vehicleStore = [];
-var map;
+  var mapSpec = {
+    color: "#<%= @route.color %>",
+    stops: <%= raw(@stops.pluck(:name, :lattitude, :longitude).map { |stop| { name: stop[0], lattitude: stop[1], longitude: stop[2] } }.to_json) %>,
+    shapes: <%= raw(@shapes.map { |shape| shape.points.order(:sequence).pluck(:lattitude, :longitude).map { |point| { lat: point[0], lng: point[1] } } }.to_json) %>,
+    vehicles: <%= raw(@vehicles.to_json) %>
+  };
 
-function initMap() {
-  var bounds = new google.maps.LatLngBounds();
+  var interval = setInterval(function() { syncVehicles("<%= route_direction_vehicles_path(@route, @direction) %>") }, 10*1000);
 
-  map = new google.maps.Map(
-    document.getElementById('map'),
-    { mapTypeId: google.maps.MapTypeId.ROADMAP }
-  );
-
-  <% @shapes.each do |shape| -%>
-  var tripCoordinates = [
-  <% shape.points.order(:sequence).each do |point| -%>
-    {lat: <%= point.lattitude %>, lng: <%= point.longitude %>},
-  <% end -%>
-  ];
-  var tripPath = new google.maps.Polyline({
-    path: tripCoordinates,
-    geodesic: true,
-    strokeColor: "#<%= @route.color %>",
-    strokeOpacity: 1.0,
-    strokeWeight: 4,
-    map: map
+  $(document).on('turbolinks:before-cache turbolinks:before-render', function() {
+    clearTimeout(interval)
   });
-  <% end -%>
-
-  <% @stops.each do |stop| -%>
-  var marker = new google.maps.Marker({
-    position: {lat: <%= stop.lattitude %>, lng: <%= stop.longitude %>},
-    title: '<%= stop.name %>',
-    icon: {
-      path: google.maps.SymbolPath.CIRCLE,
-      scale: 4,
-      strokeWeight: 2,
-      fillColor: '#FFFFFF',
-      fillOpacity: 1
-    },
-    map: map
-  });
-
-  bounds.extend(marker.position);
-  <% end -%>
-
-  var vehicles = JSON.parse('<%= raw(@vehicles.to_json) %>');
-  vehicles.forEach(addVehicle);
-
-  // Try HTML5 geolocation.
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(function(position) {
-      var marker = new google.maps.Marker({
-        position: {lat: position.coords.latitude, lng: position.coords.longitude},
-        title: 'You are here',
-        icon: {
-          path: google.maps.SymbolPath.CIRCLE,
-          scale: 4,
-          strokeWeight: 2,
-          fillColor: 'blue',
-          fillOpacity: 1
-        },
-        map: map
-      });
-    });
-  }
-
-  map.fitBounds(bounds);
-}
-
-function resolveVehicles(vehicles) {
-  //
-  // Remove any vehicles that have terminated
-  //
-
-  console.log("== START RESOLVE ==");
-
-  console.log(vehicles);
-  console.log(vehicleStore);
-
-  var activeVehicleIds = new Set(vehicles.map(function(vehicle) {
-    return vehicle.id
-  }));
-
-  console.log("activeVehicleIds");
-  console.log(activeVehicleIds);
-  console.log("vehicleStore");
-  console.log(Object.keys(vehicleStore));
-
-  let idsToRemove = new Set(
-    [...new Set(Object.keys(vehicleStore))].filter(x => !activeVehicleIds.has(x))
-  );
-
-  console.log("idsToRemove");
-  console.log(idsToRemove);
-
-  idsToRemove.forEach(function(vehicleId) {
-    console.log("Trying to delete " + vehicleId);
-
-    var marker = vehicleStore[vehicleId];
-    console.log("marker");
-    console.log(marker);
-    marker.setMap(null);
-    console.log("DELETING " + vehicleId + ": " + vehicleStore[vehicleId]);
-    delete vehicleStore[vehicleId]
-    console.log("DELETED " + vehicleId + ": " + vehicleStore[vehicleId] + "?");
-  });
-
-  vehicles.forEach(function(vehicle) {
-    // console.log(vehicle);
-    var marker = vehicleStore[vehicle.id];
-    if (marker == null) {
-      console.log("MARKER " + vehicle.id + "IS NULL");
-    }
-
-    if (marker == null) {
-      addVehicle(vehicle);
-    } else {
-      // console.log("Updating " + vehicle.id);
-      marker.setPosition({
-        lat: vehicle.attributes.latitude,
-        lng: vehicle.attributes.longitude
-      });
-      var icon = marker.getIcon();
-      icon.rotation = vehicle.attributes.bearing;
-      marker.setIcon(icon);
-    }
-  });
-
-  console.log("== END RESOLVE ==");
-}
-
-function addVehicle(vehicle) {
-  // console.log("Adding " + vehicle.id);
-
-  var marker = new google.maps.Marker({
-    position: {
-      lat: vehicle.attributes.latitude,
-      lng: vehicle.attributes.longitude
-    },
-    icon: {
-      path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
-      scale: 4,
-      strokeWeight: 2,
-      fillColor: '#FFFFFF',
-      fillOpacity: 0.75,
-      rotation: vehicle.attributes.bearing
-    },
-    map: map
-  });
-
-  vehicleStore[vehicle.id] = marker;
-}
-
-function getVehicles() {
-  console.log("GETTING");
-  $.ajax({
-    url: "<%= route_direction_vehicles_path(@route, @direction) %>",
-    context: document.body,
-    success: function(rv){
-      resolveVehicles(rv);
-    },
-    error: function() {
-      console.log("ERROR connecting");
-    }
-  });
-}
-
-var interval = setInterval(getVehicles, 10*1000);
-
-$(document).on('turbolinks:before-cache turbolinks:before-render', function() {
-  console.log("Clearing interval");
-  clearTimeout(interval)
-});
 </script>
+
 <script async defer src="https://maps.googleapis.com/maps/api/js?key=<%= ENV['GOOGLE_API_KEY'] %>&callback=initMap"></script>
 <% end -%>
