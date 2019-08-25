@@ -9,21 +9,16 @@
 
 <div id="map"></div>
 
-<% if @shapes.any? -%>
 <script>
-  var mapSpec = {
-    color: "#<%= @route.color %>",
-    stops: <%= raw(@stops.pluck(:name, :lattitude, :longitude).map { |stop| { name: stop[0], lattitude: stop[1], longitude: stop[2] } }.to_json) %>,
-    shapes: <%= raw(@shapes.map { |shape| shape.points.order(:sequence).pluck(:lattitude, :longitude).map { |point| { lat: point[0], lng: point[1] } } }.to_json) %>,
-    vehicles: <%= raw(@vehicles.to_json) %>
-  };
+  initMarkerStore();
+  initMap();
 
-  var interval = setInterval(function() { syncVehicles("<%= route_direction_vehicles_path(@route, @direction) %>") }, 10*1000);
+  populateMap(
+    "#<%= @route.color %>",
+    <%= raw(@stops.pluck(:name, :lattitude, :longitude).map { |stop| { name: stop[0], lattitude: stop[1], longitude: stop[2] } }.to_json) %>,
+    <%= raw(@shapes.map { |shape| shape.points.order(:sequence).pluck(:lattitude, :longitude).map { |point| { lat: point[0], lng: point[1] } } }.to_json) %>,
+    <%= raw(@vehicles.to_json) %>
+  );
 
-  $(document).on('turbolinks:before-cache turbolinks:before-render', function() {
-    clearTimeout(interval)
-  });
+  interval = setInterval(function() { syncVehicles("<%= route_direction_vehicles_path(@route, @direction) %>") }, 10*1000);
 </script>
-
-<script async defer src="https://maps.googleapis.com/maps/api/js?key=<%= ENV['GOOGLE_API_KEY'] %>&callback=initMap"></script>
-<% end -%>

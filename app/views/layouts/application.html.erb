@@ -1,21 +1,22 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <% if Rails.env.production? -%>
-      <script async src="https://www.googletagmanager.com/gtag/js?id=UA-131050763-1"></script>
-      <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-        gtag('config', 'UA-131050763-1');
-      </script>
-    <% end -%>
-
     <title>MBTA Map</title>
-    <%= csrf_meta_tags %>
 
+    <%= csrf_meta_tags %>
     <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track': 'reload' %>
     <%= javascript_include_tag 'application', 'data-turbolinks-track': 'reload' %>
+    <script src="https://maps.googleapis.com/maps/api/js?key=<%= ENV['GOOGLE_API_KEY'] %>" data-turbolinks-eval="false"></script>
+    <% if Rails.env.production? -%>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-131050763-1"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'UA-131050763-1');
+    </script>
+    <% end -%>
+
   </head>
 
   <body>
@@ -58,5 +59,6 @@
     </nav>
 
     <%= yield %>
+
   </body>
 </html>

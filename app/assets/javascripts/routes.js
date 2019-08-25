@@ -1,13 +1,14 @@
-var markerStore = [];
-var map;
+var interval, map, markerStore;
+
+$(document).on('turbolinks:before-render', function() {
+  clearTimeout(interval);
+});
 
 function syncVehicles(url) {
   $.ajax({
     url: url,
     context: document.body,
-    success: function(rv){
-      resolveVehicles(rv);
-    },
+    success: resolveVehicles,
     error: function() {
       // TODO: Color an indicator or something here
       console.log("Error connecting");
@@ -74,39 +75,28 @@ function addVehicle(vehicle) {
 }
 
 //
-// Vehicle store methods
+// TODO: Move this somewhere else
 //
 
-function addMarkerToStore(id, marker) {
-  markerStore[id] = marker;
-}
-
-function removeMarkerFromStore(id) {
-  delete markerStore[id]
-}
-
-
-// TODO: Dump this somewhere
 function initMap() {
-  var bounds = new google.maps.LatLngBounds();
-
   map = new google.maps.Map(
     document.getElementById('map'),
-    { mapTypeId: google.maps.MapTypeId.ROADMAP }
+    {
+      mapTypeId: google.maps.MapTypeId.ROADMAP,
+      center: { lat: 42.3601, lng: -71.0589 },
+      zoom: 12
+    }
   );
+}
 
-  mapSpec.shapes.forEach(function(shape) {
-    var tripPath = new google.maps.Polyline({
-      path: shape,
-      geodesic: true,
-      strokeColor: mapSpec.color,
-      strokeOpacity: 1.0,
-      strokeWeight: 4,
-      map: map
-    });
-  });
+function populateMap(routeColor, stops, shapes, vehicles) {
+  //
+  // Populate stops
+  //
 
-  mapSpec.stops.forEach(function(stop) {
+  var bounds = new google.maps.LatLngBounds();
+
+  stops.forEach(function(stop) {
     var marker = new google.maps.Marker({
       position: {lat: stop.lattitude, lng: stop.longitude},
       title: stop.name,
@@ -123,11 +113,33 @@ function initMap() {
     bounds.extend(marker.position);
   });
 
-  mapSpec.vehicles.forEach(addVehicle);
-
   map.fitBounds(bounds);
 
-  // Try HTML5 geolocation.
+  //
+  // Populate shapes
+  //
+
+  shapes.forEach(function(shape) {
+    var tripPath = new google.maps.Polyline({
+      path: shape,
+      geodesic: true,
+      strokeColor: routeColor,
+      strokeOpacity: 1.0,
+      strokeWeight: 4,
+      map: map
+    });
+  });
+
+  //
+  // Populate vehicles
+  //
+
+  vehicles.forEach(addVehicle);
+
+  //
+  // Try geolocation
+  //
+
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(function(position) {
       var marker = new google.maps.Marker({
@@ -144,4 +156,20 @@ function initMap() {
       });
     });
   }
+}
+
+//
+// Vehicle store methods
+//
+
+function initMarkerStore() {
+  markerStore = {};
+}
+
+function addMarkerToStore(id, marker) {
+  markerStore[id] = marker;
+}
+
+function removeMarkerFromStore(id) {
+  delete markerStore[id]
 }
