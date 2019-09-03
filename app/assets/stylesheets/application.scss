@@ -8,5 +8,23 @@ html, body {
 }
 
 #map {
-  height: 80%;
+  height: 85%;
+}
+
+.route-banner {
+  text-align: center;
+  padding-right: 10px;
+}
+
+.route-banner h5 {
+  margin-bottom: 0px;
+}
+
+.route-banner a {
+  color: black;
+  text-decoration: underline;
+}
+
+.route-banner a.link-active {
+  font-weight: bold;
 }
