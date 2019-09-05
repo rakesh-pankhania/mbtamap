@@ -12,10 +12,10 @@
 //
 //= require jquery
 //= require jquery_ujs
-//= require jquery_easing
+//= require jquery-easing/jquery.easing.1.3
 //= require tether
 //= require bootstrap
 //= require turbolinks
-//= require marker_animate
-//= require sliding_marker
+//= require marker-animate/markerAnimate
+//= require marker-animate-unobtrusive
 //= require_tree .
