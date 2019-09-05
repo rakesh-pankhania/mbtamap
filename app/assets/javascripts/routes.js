@@ -55,7 +55,7 @@ function resolveVehicles(vehicles) {
 }
 
 function addVehicle(vehicle) {
-  var marker = new google.maps.Marker({
+  var marker = new SlidingMarker({
     position: {
       lat: vehicle.attributes.latitude,
       lng: vehicle.attributes.longitude
