@@ -13,6 +13,9 @@ source 'https://rails-assets.org' do
   gem 'rails-assets-tether', '>= 1.3.3'
 end
 
+# Ruby
+# https://github.com/ruby/ruby
+ruby '2.5.3'
 # Ruby on Rails
 # https://github.com/rails/rails
 gem 'rails', '~> 5.1.4'
