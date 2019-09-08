@@ -1,9 +1,11 @@
 <div class="route-banner" style="background-color: #<%= @route.color %>">
-  <div class="float-right">
-    <%= link_to 'Inbound', route_direction_path(@route, 'inbound'), class: direction_button_style('inbound') %> |
-    <%= link_to 'Outbound', route_direction_path(@route, 'outbound'), class: direction_button_style('outbound') %>
+  <div class="grid-x grid-margin-x">
+    <div class="cell small-6 small-order-1"><div class="route-name"><font color="#<%= @route.text_color %>"><%= @route.name %></font></div></div>
+    <div class="cell small-6 small-order-2">
+      <%= link_to 'Inbound', route_direction_path(@route, 'inbound'), class: direction_button_style('inbound') %> |
+      <%= link_to 'Outbound', route_direction_path(@route, 'outbound'), class: direction_button_style('outbound') %>
+    </div>
   </div>
-  <h5><font color="#<%= @route.text_color %>"><%= @route.name %></font></h5>
 </div>
 
 <div id="notice"><%= notice %></div>

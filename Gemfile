@@ -7,12 +7,6 @@ git_source(:github) do |repo_name|
   "https://github.com/#{repo_name}.git"
 end
 
-source 'https://rails-assets.org' do
-  # Bootstrap tooltips and popovers require tether
-  # http://tether.io/
-  gem 'rails-assets-tether', '>= 1.3.3'
-end
-
 # Ruby
 # https://github.com/ruby/ruby
 ruby '2.5.3'
@@ -77,12 +71,15 @@ end
 # A library for bulk insertion of data into your database using ActiveRecord
 # https://github.com/zdennis/activerecord-import
 gem 'activerecord-import'
-# Bootstrap 4 Ruby Gem for Rails.
-# https://github.com/twbs/bootstrap-rubygem
-gem 'bootstrap'
+# Autoprefixer for Ruby and Ruby on Rails
+# https://github.com/ai/autoprefixer-rails
+gem 'autoprefixer-rails'
 # A Ruby gem to load environment variables from .env
 # https://github.com/bkeepers/dotenv
 gem 'dotenv-rails'
+# Foundation for Rails
+# https://github.com/zurb/foundation-rails
+gem 'foundation-rails'
 # Create pretty URL's and work with human-friendly strings.
 # https://github.com/norman/friendly_id
 gem 'friendly_id'

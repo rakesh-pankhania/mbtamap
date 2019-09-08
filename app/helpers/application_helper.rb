@@ -2,6 +2,6 @@
 
 module ApplicationHelper
   def direction_button_style(direction)
-    @direction == direction ? 'link-active' : 'link-inactive'
+    @direction == direction ? 'link-active' : ''
   end
 end

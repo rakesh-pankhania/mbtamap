@@ -13,9 +13,12 @@
 //= require jquery
 //= require jquery_ujs
 //= require jquery-easing/jquery.easing.1.3
-//= require tether
-//= require bootstrap
 //= require turbolinks
 //= require marker-animate/markerAnimate
 //= require marker-animate-unobtrusive
+//= require foundation
 //= require_tree .
+
+$(document).on('turbolinks:load', function() {
+    $(function(){ $(document).foundation(); });
+});
