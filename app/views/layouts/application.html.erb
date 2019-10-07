@@ -23,20 +23,16 @@
   </head>
 
   <body>
-    <div class="title-bar" data-responsive-toggle="menu-navbar" data-hide-for="medium">
-      <button class="menu-icon" type="button" data-toggle="menu-navbar"></button>
-      <div class="title-bar-title">MBTA Map</div>
-    </div>
 
-    <div class="top-bar" id="menu-navbar">
-      <ul class="menu vertical medium-horizontal" data-responsive-menu="drilldown medium-dropdown">
-        <li><%= link_to "MBTA Map", root_url, class: "hide-for-small-only" %></li>
+    <div class="off-canvas position-left" id="offCanvas" data-off-canvas>
+      <ul class="vertical menu accordion-menu main-nav" data-accordion-menu>
+        <li><%= link_to "MBTA Map", root_url, class: "home-link" %></li>
         <li><%= link_to "Red Line", route_direction_path('red-line', 'inbound') %></li>
         <li><%= link_to "Orange Line", route_direction_path('orange-line', 'inbound') %></li>
         <li><%= link_to "Blue Line", route_direction_path('blue-line', 'inbound') %></li>
         <li>
-          <a href="javascript:void(0)">Green Line</a>
-          <ul class="vertical menu">
+          <a href="#">Green Line</a>
+          <ul class="vertical menu nested">
             <%= link_to "Green Line B", route_direction_path('green-line-b', 'inbound') %>
             <%= link_to "Green Line C", route_direction_path('green-line-c', 'inbound') %>
             <%= link_to "Green Line D", route_direction_path('green-line-d', 'inbound') %>
@@ -44,8 +40,8 @@
           </ul>
         </li>
         <li>
-          <a href="javascript:void(0)">Buses</a>
-          <ul class="vertical menu" style="overflow: scroll; height: 400px !important">
+          <a href="#">Buses</a>
+          <ul class="vertical menu nested" style="overflow: scroll; height: 500px !important">
             <% Route.where(route_type: 3).each do |bus| -%>
               <%= link_to bus.name, route_direction_path(bus.slug, 'inbound') %>
             <% end -%>
@@ -54,7 +50,21 @@
       </ul>
     </div>
 
-    <%= yield %>
+    <div class="off-canvas-content" data-off-canvas-content>
+      <div class="mobile-nav-bar title-bar" style="background-color: <%= content_for?(:nav_color) ? yield(:nav_color) : "black" %>">
+        <div class="title-bar-left">
+          <button class="menu-icon" type="button" data-toggle="offCanvas"></button>
+        </div>
+        <div class="title-bar-center">
+          <span class="title-bar-title"><%= content_for?(:nav_title) ? yield(:nav_title) : "MBTA Map" %></span>
+        </div>
+        <div class="title-bar-right">
+          <span class="title-bar-logo"></span>
+        </div>
+      </div>
+
+      <%= yield %>
+    </div>
 
   </body>
 </html>

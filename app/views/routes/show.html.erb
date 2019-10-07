@@ -1,15 +1,12 @@
-<div class="route-banner text-center" style="background-color: #<%= @route.color %>">
-  <font color="#<%= @route.text_color %>"><%= @route.name %></font>
-</div>
+<% content_for :nav_color, "##{@route.color}" %>
+<% content_for :nav_title, @route.name %>
 
-<div id="notice"><%= notice %></div>
+<ul class="tabs route-utilities" style="background-color: #<%= @route.color %>">
+  <li class="<%= direction_button_style('inbound') %>"><%= link_to 'Inbound', route_direction_path(@route, 'inbound') %></li>
+  <li class="<%= direction_button_style('outbound') %>"><%= link_to 'Outbound', route_direction_path(@route, 'outbound') %></li>
+</ul>
 
 <div id="map"></div>
-
-<div class="expanded button-group no-gaps">
-  <%= link_to 'Inbound', route_direction_path(@route, 'inbound'), class: direction_button_style('inbound') %>
-  <%= link_to 'Outbound', route_direction_path(@route, 'outbound'), class: direction_button_style('outbound') %>
-</div>
 
 <script>
   initMarkerStore();
