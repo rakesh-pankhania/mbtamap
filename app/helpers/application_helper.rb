@@ -2,6 +2,6 @@
 
 module ApplicationHelper
   def direction_button_style(direction)
-    @direction == direction ? 'tabs-title text-center is-active' : 'tabs-title text-center'
+    @direction == direction ? 'text-center is-active' : 'text-center'
   end
 end

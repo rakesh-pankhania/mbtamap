@@ -32,7 +32,7 @@
         <li><%= link_to "Blue Line", route_direction_path('blue-line', 'inbound') %></li>
         <li>
           <a href="#">Green Line</a>
-          <ul class="vertical menu nested">
+          <ul class="vertical menu secondary">
             <%= link_to "Green Line B", route_direction_path('green-line-b', 'inbound') %>
             <%= link_to "Green Line C", route_direction_path('green-line-c', 'inbound') %>
             <%= link_to "Green Line D", route_direction_path('green-line-d', 'inbound') %>
@@ -41,7 +41,7 @@
         </li>
         <li>
           <a href="#">Buses</a>
-          <ul class="vertical menu nested" style="overflow: scroll; height: 500px !important">
+          <ul class="vertical menu secondary" style="overflow: scroll; height: 500px !important">
             <% Route.where(route_type: 3).each do |bus| -%>
               <%= link_to bus.name, route_direction_path(bus.slug, 'inbound') %>
             <% end -%>

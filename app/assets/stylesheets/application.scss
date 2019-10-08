@@ -2,21 +2,32 @@
 
 html, body {
   height: 100%;
-  margin: 0;
-  padding: 0;
 }
 
-#map {
-  height: 700px;
-  width: 100%;
+/*
+  Main nav
+*/
+
+.main-nav a.home-link {
+  font-weight: bold;
+  background-color: black;
+  color: white;
 }
+
+
+/*
+  Route utilities
+*/
 
 .route-utilities {
-  border: 0px;
+  width: 100%;
+  background-color: black;
+  margin: 0px;
 }
 
 .route-utilities li {
-  width: 50%;
+  display: inline-block;
+  width: 49%;
 }
 
 .route-utilities li.is-active {
@@ -29,12 +40,12 @@ html, body {
   font-size: 14px;
 }
 
-// Prevent default hover behavior
-.route-utilities li a:hover {
-  color: inherit;
-  background-color: inherit;
-}
 
-.main-nav a.home-link {
-  font-weight: bold;
+/*
+  Other
+*/
+
+#map {
+  width: 100%;
+  min-height: 600px;
 }

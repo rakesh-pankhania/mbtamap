@@ -1,7 +1,7 @@
 <% content_for :nav_color, "##{@route.color}" %>
 <% content_for :nav_title, @route.name %>
 
-<ul class="tabs route-utilities" style="background-color: #<%= @route.color %>">
+<ul class="route-utilities" style="background-color: #<%= @route.color %>">
   <li class="<%= direction_button_style('inbound') %>"><%= link_to 'Inbound', route_direction_path(@route, 'inbound') %></li>
   <li class="<%= direction_button_style('outbound') %>"><%= link_to 'Outbound', route_direction_path(@route, 'outbound') %></li>
 </ul>
