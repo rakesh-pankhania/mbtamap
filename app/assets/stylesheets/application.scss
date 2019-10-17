@@ -1,12 +1,15 @@
 @import "foundation_and_overrides";
 
-html, body {
-  height: 100%;
-}
+$title-bar-height: 50px;
+$route-utilities-height: 40px;
 
 /*
   Main nav
 */
+
+.title-bar {
+  height: $title-bar-height;
+}
 
 .main-nav a.home-link {
   font-weight: bold;
@@ -21,6 +24,7 @@ html, body {
 
 .route-utilities {
   width: 100%;
+  height: $route-utilities-height;
   background-color: black;
   margin: 0px;
 }
@@ -28,6 +32,7 @@ html, body {
 .route-utilities li {
   display: inline-block;
   width: 49%;
+  height: 100%;
 }
 
 .route-utilities li.is-active {
@@ -38,6 +43,7 @@ html, body {
   font-weight: bold;
   color: white;
   font-size: 14px;
+  display: block;
 }
 
 
@@ -47,5 +53,6 @@ html, body {
 
 #map {
   width: 100%;
-  min-height: 600px;
+  min-height: 200px;
+  height: calc(100vh - #{$title-bar-height} - #{$route-utilities-height});
 }
