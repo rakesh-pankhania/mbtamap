@@ -18,7 +18,7 @@ gem 'rails', '~> 5.1.4'
 gem 'pg', '~> 0.18'
 # A Ruby/Rack web server built for concurrency
 # https://github.com/puma/puma
-gem 'puma', '~> 3.0'
+gem 'puma', '~> 3.12'
 # Sass adapter for the Rails asset pipeline
 # https://github.com/rails/sass-rails
 gem 'sass-rails', '~> 5.0'
