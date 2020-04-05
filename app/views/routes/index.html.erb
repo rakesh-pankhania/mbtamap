@@ -1,10 +1,62 @@
 <p id="notice"><%= notice %></p>
 
-<div class="grid-padding-x">
+<div style="padding: 20px;">
   <div class="cell small-6">
     <h3>Welcome to MBTA Map</h3>
 
-    Click the menu icon in the top left to get started. <br /><br />
+    Click the menu icon in the top left to move around, or choose a route below. <br />
     If you have any comments, send me a message at <%= link_to "mbtamap@gmail.com", "mailto:mbtamap@gmail.com" %>.
+
+    <br /><br />
+
+    <table class="unstriped" cellspacing="0" cellspacing="4">
+      <tr>
+        <td>
+          <div style="padding: 12px; text-align: center; background: #DA291C; border-radius: 2px;">
+            <%= link_to "Red Line", route_direction_path('red-line', 'inbound'), style: "color: #FFFFFF; font-weight: bold; display: block" %>
+          </div>
+        </td>
+        <td>
+          <div style="padding: 12px; text-align: center; background: #ED8B00; border-radius: 2px;">
+            <%= link_to "Orange Line", route_direction_path('orange-line', 'inbound'), style: "color: #FFFFFF; font-weight: bold; display: block" %>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <div style="padding: 12px; text-align: center; background: #003DA5; border-radius: 2px;">
+            <%= link_to "Blue Line", route_direction_path('blue-line', 'inbound'), style: "color: #FFFFFF; font-weight: bold; display: block" %>
+          </div>
+        </td>
+        <td>
+          <div style="padding: 12px; text-align: center; background: #00843D; border-radius: 2px;">
+            <%= link_to "Green Line B", route_direction_path('b-green-line-b', 'inbound'), style: "color: #FFFFFF; font-weight: bold; display: block" %>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <div style="padding: 12px; text-align: center; background: #00843D; border-radius: 2px;">
+            <%= link_to "Green Line C", route_direction_path('c-green-line-c', 'inbound'), style: "color: #FFFFFF; font-weight: bold; display: block" %>
+          </div>
+        </td>
+        <td>
+          <div style="padding: 12px; text-align: center; background: #00843D; border-radius: 2px;">
+            <%= link_to "Green Line D", route_direction_path('d-green-line-d', 'inbound'), style: "color: #FFFFFF; font-weight: bold; display: block" %>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <div style="padding: 12px; text-align: center; background: #00843D; border-radius: 2px;">
+            <%= link_to "Green Line E", route_direction_path('e-green-line-e', 'inbound'), style: "color: #FFFFFF; font-weight: bold; display: block" %>
+          </div>
+        </td>
+        <td>
+          <div style="padding: 12px; text-align: center;">
+          </div>
+        </td>
+      </tr>
+    </table>
   </div>
 </div>

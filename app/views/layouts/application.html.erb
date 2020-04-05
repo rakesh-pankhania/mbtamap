@@ -27,23 +27,23 @@
     <div class="off-canvas position-left" id="offCanvas" data-off-canvas>
       <ul class="vertical menu accordion-menu main-nav" data-accordion-menu>
         <li><%= link_to "MBTA Map", root_url, class: "home-link" %></li>
-        <li><%= link_to "Red Line", route_direction_path('red-line', 'inbound') %></li>
-        <li><%= link_to "Orange Line", route_direction_path('orange-line', 'inbound') %></li>
-        <li><%= link_to "Blue Line", route_direction_path('blue-line', 'inbound') %></li>
-        <li>
-          <a href="#">Green Line</a>
+        <li style="background: #DA291C;"><%= link_to "Red Line", route_direction_path('red-line', 'inbound'), style: "color: #FFFFFF;" %></li>
+        <li style="background: #ED8B00;"><%= link_to "Orange Line", route_direction_path('orange-line', 'inbound'), style: "color: #FFFFFF;" %></li>
+        <li style="background: #003DA5;"><%= link_to "Blue Line", route_direction_path('blue-line', 'inbound'), style: "color: #FFFFFF;" %></li>
+        <li style="background: #00843D;">
+          <a href="#" style="color: #FFFFFF">Green Line</a>
           <ul class="vertical menu secondary">
-            <%= link_to "Green Line B", route_direction_path('green-line-b', 'inbound') %>
-            <%= link_to "Green Line C", route_direction_path('green-line-c', 'inbound') %>
-            <%= link_to "Green Line D", route_direction_path('green-line-d', 'inbound') %>
-            <%= link_to "Green Line E", route_direction_path('green-line-e', 'inbound') %>
+            <%= link_to "Green Line B", route_direction_path('b-green-line-b', 'inbound'), style: "background: #00843D; color: #FFFFFF" %>
+            <%= link_to "Green Line C", route_direction_path('c-green-line-c', 'inbound'), style: "background: #00843D; color: #FFFFFF" %>
+            <%= link_to "Green Line D", route_direction_path('d-green-line-d', 'inbound'), style: "background: #00843D; color: #FFFFFF" %>
+            <%= link_to "Green Line E", route_direction_path('e-green-line-e', 'inbound'), style: "background: #00843D; color: #FFFFFF" %>
           </ul>
         </li>
-        <li>
-          <a href="#">Buses</a>
+        <li style="background: #7C878E;">
+          <a href="#" style="color: #FFFFFF">Buses</a>
           <ul class="vertical menu secondary" style="overflow: scroll; height: 500px !important">
             <% Route.where(route_type: 3).each do |bus| -%>
-              <%= link_to bus.name, route_direction_path(bus.slug, 'inbound') %>
+              <%= link_to bus.name, route_direction_path(bus.slug, 'inbound'), style: "background: #7C878E; color: #FFFFFF" %>
             <% end -%>
           </ul>
         </li>
